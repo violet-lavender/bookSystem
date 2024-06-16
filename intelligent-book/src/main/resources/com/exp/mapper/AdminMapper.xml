@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.exp.mapper.AdminMapper">
+
+    <!-- 书籍查询 -->
+    <select id="bookList" resultType="com.exp.pojo.Book">
+        select *
+        from tb_book
+        <where>
+            <if test="name != null and name != ''">name like concat('%', #{name}, '%')</if>
+            <if test="author != null and author != ''">author like concat('%', #{author}, '%')</if>
+            <if test="press != null">press like concat('%', #{press}, '%')</if>
+            <if test="language != null and language != ''">language like concat('%', #{language}, '%')</if>
+        </where>
+        order by lend_frequency desc, update_time desc
+    </select>
+
+
+    <!-- 书籍(批量)删除 -->
+    <delete id="deleteBooks">
+        delete
+        from tb_book
+        where id in
+        <foreach collection="ids" item="id" separator="," open="(" close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+    <!-- 用户(批量)删除 -->
+    <delete id="deleteUsers">
+        delete
+        from tb_user
+        where id in
+        <foreach collection="ids" item="id" separator="," open="(" close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+    <!-- 更新书籍信息 -->
+    <update id="updateBook">update tb_book
+        <set>
+            <if test="name != null and name != ''">
+                name = #{name},
+            </if>
+            <if test="image != null and image != ''">
+                image = #{image},
+            </if>
+            <if test="introduction != null and introduction != ''">
+                introduction = #{introduction},
+            </if>
+            <if test="price != null">
+                price = #{price},
+            </if>
+            <if test="classId != null">
+                class_id = #{classId},
+            </if>
+            <if test="number != null">
+                number = #{number},
+            </if>
+            <if test="updateTime != null">
+                update_time = #{updateTime}
+            </if>
+        </set>
+        where id = #{id}
+    </update>
+
+
+</mapper>
