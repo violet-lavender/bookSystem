@@ -1,5 +1,6 @@
 package com.exp.service;
 
+import com.exp.anno.Log;
 import com.exp.config.AppConfig;
 import com.exp.mapper.UserMapper;
 import com.exp.pojo.Lend;
@@ -24,6 +25,7 @@ public class ScheduleService {
     private UserMapper userMapper;
 
     // 检查逾期记录
+    @Log
     @Transactional
     @Scheduled(cron = "0 0 0 * * ?") // 每天午夜执行一次
     public void checkOverdueLends() {
@@ -62,6 +64,7 @@ public class ScheduleService {
     }
 
     // 检查黑名单
+    @Log
     @Transactional
     @Scheduled(cron = "0 0 0 * * ?") // 每天午夜执行一次
     public void checkAndRemoveFromBlacklist() {

@@ -1,9 +1,6 @@
 package com.exp.service;
 
-import com.exp.pojo.Book;
-import com.exp.pojo.PageBean;
-import com.exp.pojo.Result;
-import com.exp.pojo.User;
+import com.exp.pojo.*;
 
 import java.util.List;
 
@@ -23,4 +20,7 @@ public interface AdminService {
 
     void updateUserStatus(Integer id, Integer isEnabled);
 
+    PageBean pageOperateLog(Integer page, Integer pageSize);
+
+    OperateLog getOperateLog(Integer id);
 }

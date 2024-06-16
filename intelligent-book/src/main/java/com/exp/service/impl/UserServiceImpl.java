@@ -26,8 +26,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public Book getBook(Integer id) {
-        Book book = userMapper.getBookById(id);
-        return book;
+        return userMapper.getBookById(id);
     }
 
     @Override
@@ -38,14 +37,12 @@ public class UserServiceImpl implements UserService {
         Integer start = (page - 1) * pageSize;
         List<Lend> lendList = userMapper.lendListByUserId(start, pageSize, id);
         // 封装PageBean对象
-        PageBean pageBean = new PageBean(count, lendList);
-        return pageBean;
+        return new PageBean(count, lendList);
     }
 
     @Override
     public User getUser(Integer id) {
-        User user = userMapper.getUserById(id);
-        return user;
+        return userMapper.getUserById(id);
     }
 
     @Transactional
@@ -95,8 +92,7 @@ public class UserServiceImpl implements UserService {
         Integer start = (page - 1) * pageSize;
         List<Notification> notificationList = userMapper.notificationListByUserId(start, pageSize, id);
         // 封装PageBean对象
-        PageBean pageBean = new PageBean(count, notificationList);
-        return pageBean;
+        return new PageBean(count, notificationList);
     }
 
     // 添加黑名单

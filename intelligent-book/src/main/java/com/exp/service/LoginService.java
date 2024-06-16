@@ -8,8 +8,10 @@ import com.exp.pojo.Result;
 import com.exp.pojo.User;
 import com.exp.utils.JwtUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -26,7 +28,7 @@ public class LoginService {
                 Admin admin = loginMapper.getAdmin(username, password);
                 if (admin == null) {
                     return Result.error("Invalid username or password");
-                }else {
+                } else {
                     Map<String, Object> claims = new HashMap<>();
                     claims.put("role", role);
                     claims.put("id", admin.getId());
@@ -38,7 +40,7 @@ public class LoginService {
                 User user = loginMapper.getUser(username, password);
                 if (user == null) {
                     return Result.error("Invalid username or password");
-                }else {
+                } else {
                     Map<String, Object> claims = new HashMap<>();
                     claims.put("role", role);
                     claims.put("id", user.getId());
@@ -51,7 +53,7 @@ public class LoginService {
                 Analyst analyst = loginMapper.getAnalyst(username, password);
                 if (analyst == null) {
                     return Result.error("Invalid username or password");
-                }else {
+                } else {
                     Map<String, Object> claims = new HashMap<>();
                     claims.put("role", role);
                     claims.put("id", analyst.getId());
@@ -66,6 +68,20 @@ public class LoginService {
     }
 
     public Result registerUser(RegisterRequest registerRequest) {
+        if (registerRequest.getUsername() == null || registerRequest.getPassword() == null
+                || registerRequest.getName() == null || registerRequest.getGender() == null) {
+            return Result.error("All fields are required.");
+        }
+        try {
+            loginMapper.insertUser(registerRequest);
+            return Result.success();
+        } catch (DataIntegrityViolationException e) {
+            // 捕获唯一约束违规异常
+            return Result.error("Username already exists.");
+        } catch (Exception e) {
+            // 捕获其他异常
+            return Result.error(e.getMessage());
+        }
 
     }
 }

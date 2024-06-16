@@ -13,6 +13,11 @@ public class AppConfig {
     // 默认续借时长（以天为单位）
     public static final int DEFAULT_RENEWAL_DURATION_DAYS = 10;
 
+    // 系统操作默认参数
+    public static final String DEFAULT_OPERATE_ROLE = "SYSTEM";
+    public static final Integer DEFAULT_OPERATE_USER = -1;
+    public static final String DEFAULT_OPERATE_USERNAME = "System";
+
     private AppConfig() {
         // 私有构造方法防止实例化
     }

@@ -1,10 +1,8 @@
 package com.exp.controller;
 
+import com.exp.anno.Log;
 import com.exp.dto.UserStatusUpdateRequest;
-import com.exp.pojo.Book;
-import com.exp.pojo.PageBean;
-import com.exp.pojo.Result;
-import com.exp.pojo.User;
+import com.exp.pojo.*;
 import com.exp.service.AdminService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -56,6 +54,21 @@ public class AdminController {
         return Result.success(pageBean);
     }
 
+    @GetMapping("/OperateLogs")   // 查询系统日志
+    public Result pageLog(@RequestParam(defaultValue = "1") Integer page,
+                           @RequestParam(defaultValue = "10") Integer pageSize) {
+        PageBean pageBean = adminService.pageOperateLog(page, pageSize);
+        return Result.success(pageBean);
+    }
+
+    @GetMapping("/OperateLog/{id}")     //日志详情
+    public Result getLog(@PathVariable Integer id){
+        log.info("日志详情, id: {}", id);
+        OperateLog operateLog = adminService.getOperateLog(id);
+        return Result.success(operateLog);
+    }
+
+    @Log
     @DeleteMapping("/books/{ids}")    // 书籍删除和批量删除
     public Result deleteBooks(@PathVariable List<Integer> ids){
         log.info("(批量)删除书籍, ids: {}", ids);
@@ -63,18 +76,21 @@ public class AdminController {
         return Result.success();
     }
 
+    @Log
     @PostMapping("/book/saveBook")    // 新增书籍
     public Result insertBook(@RequestBody Book book){
         log.info("新增书籍, book: {}", book);
         return adminService.insertBook(book);
     }
 
+    @Log
     @PutMapping("/book/updateBook")     // 更新书籍信息 —— 根据id更新
     public Result updateBook(@RequestBody Book book){
         log.info("更新书籍信息: {}", book);
         return adminService.updateBook(book);
     }
 
+    @Log
     @DeleteMapping("/users/{ids}")    // 用户删除和批量删除
     public Result deleteUsers(@PathVariable List<Integer> ids){
         log.info("(批量)删除用户, ids: {}", ids);
@@ -82,6 +98,7 @@ public class AdminController {
         return Result.success();
     }
 
+    @Log
     @PutMapping("/user/setIsEnabled1")   //启用用户, 解除黑名单
     public Result userIsEnabled(@RequestBody UserStatusUpdateRequest request){
         adminService.updateUserStatus(request.getId(), request.getIsEnabled());

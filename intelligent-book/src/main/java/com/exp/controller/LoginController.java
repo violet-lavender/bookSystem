@@ -1,5 +1,6 @@
 package com.exp.controller;
 
+import com.exp.anno.Log;
 import com.exp.dto.LoginRequest;
 import com.exp.dto.RegisterRequest;
 import com.exp.pojo.Result;
@@ -25,6 +26,7 @@ public class LoginController {
         return loginService.login(loginRequest.getUsername(), loginRequest.getPassword(), loginRequest.getRole());
     }
 
+    @Log
     @PostMapping("/register")
     public Result registerUser(@RequestBody RegisterRequest registerRequest) {
         log.info("注册: {}", registerRequest);

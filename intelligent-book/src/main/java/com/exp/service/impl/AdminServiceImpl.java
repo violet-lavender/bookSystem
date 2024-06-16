@@ -1,7 +1,7 @@
 package com.exp.service.impl;
 
 import com.exp.mapper.AdminMapper;
-import com.exp.mapper.UserMapper;
+import com.exp.mapper.OperateLogMapper;
 import com.exp.pojo.*;
 import com.exp.service.AdminService;
 import com.exp.service.UserService;
@@ -24,6 +24,9 @@ public class AdminServiceImpl implements AdminService {
     @Autowired
     private UserService userService;
 
+    @Autowired
+    private OperateLogMapper operateLogMapper;
+
     @Override
     public PageBean pageBook(Integer page, Integer pageSize, String name, String author, String press, String language) {
         // 设置分页参数 —— 页码, 记录数
@@ -32,14 +35,12 @@ public class AdminServiceImpl implements AdminService {
         List<Book> bookList = adminMapper.bookList(name, author, press, language);
         Page<Book> p = (Page<Book>) bookList;
         // 封装PageBean对象
-        PageBean pageBean = new PageBean(p.getTotal(), p.getResult());
-        return pageBean;
+        return new PageBean(p.getTotal(), p.getResult());
     }
 
     @Override
     public Book getBook(Integer id) {
-        Book book = adminMapper.getBookById(id);
-        return book;
+        return adminMapper.getBookById(id);
     }
 
     @Override
@@ -50,14 +51,12 @@ public class AdminServiceImpl implements AdminService {
         Integer start = (page - 1) * pageSize;
         List<User> userList = adminMapper.userList(start, pageSize);
         // 封装PageBean对象
-        PageBean pageBean = new PageBean(count, userList);
-        return pageBean;
+        return new PageBean(count, userList);
     }
 
     @Override
     public User getUser(Integer id) {
-        User user = adminMapper.getUserById(id);
-        return user;
+        return adminMapper.getUserById(id);
     }
 
     @Override
@@ -68,8 +67,7 @@ public class AdminServiceImpl implements AdminService {
         Integer start = (page - 1) * pageSize;
         List<Lend> lendList = adminMapper.lendList(start, pageSize);
         // 封装PageBean对象
-        PageBean pageBean = new PageBean(count, lendList);
-        return pageBean;
+        return new PageBean(count, lendList);
     }
 
     @Override
@@ -125,6 +123,22 @@ public class AdminServiceImpl implements AdminService {
         }else {
             userService.blacklistUser(id);
         }
+    }
+
+    @Override
+    public PageBean pageOperateLog(Integer page, Integer pageSize) {
+        // 获取总记录数
+        Long count = operateLogMapper.countOperateLog();
+        // 获取分页查询结果列表, 起始索引 = (页码 - 1) * 记录数, 注意索引从0开始, 而页码是从1开始的
+        Integer start = (page - 1) * pageSize;
+        List<OperateLog> operateLogList = operateLogMapper.operateLogList(start, pageSize);
+        // 封装PageBean对象
+        return new PageBean(count, operateLogList);
+    }
+
+    @Override
+    public OperateLog getOperateLog(Integer id) {
+        return operateLogMapper.getOperateLogById(id);
     }
 
 }

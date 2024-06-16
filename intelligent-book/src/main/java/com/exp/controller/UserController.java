@@ -1,5 +1,6 @@
 package com.exp.controller;
 
+import com.exp.anno.Log;
 import com.exp.pojo.*;
 import com.exp.service.UserService;
 import lombok.extern.slf4j.Slf4j;
@@ -68,12 +69,14 @@ public class UserController {
         return Result.success();
     }
 
+    @Log
     @PostMapping("/lend/saveLend")   // 借阅行为, 插入借阅记录
     public Result lendBook(@RequestBody Lend lend){
         log.info("新增借阅记录, lend: {}", lend);
         return userService.lendBook(lend);
     }
 
+    @Log
     @PutMapping("/lend/back")   // 归还书籍
     public Result backBook(@RequestParam Integer id){
         log.info("书籍归还记录, id: {}", id);
@@ -81,6 +84,7 @@ public class UserController {
         return Result.success();
     }
 
+    @Log
     @PutMapping("/lend/delay")   // 延长借阅
     public Result delayBook(@RequestBody Integer id){
         log.info("书籍归还记录, lend: {}", id);
@@ -88,7 +92,7 @@ public class UserController {
         return Result.success();
     }
 
-
+    @Log
     @PutMapping("/user/updateUser")    // 更新用户信息
     public Result updateUser(@RequestBody User user){
         log.info("更新用户信息: {}", user);
