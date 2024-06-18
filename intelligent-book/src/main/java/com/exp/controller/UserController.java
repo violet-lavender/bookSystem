@@ -1,6 +1,8 @@
 package com.exp.controller;
 
 import com.exp.anno.Log;
+import com.exp.anno.RequiresRole;
+import com.exp.dto.StartUpdateRequest;
 import com.exp.pojo.*;
 import com.exp.service.UserService;
 import lombok.extern.slf4j.Slf4j;
@@ -14,24 +16,26 @@ import java.util.List;
 @Slf4j
 @RequestMapping("/users")
 @RestController
+@RequiresRole({Role.USER}) // 权限管理
 public class UserController {
     @Autowired
     private UserService userService;
 
     @GetMapping("/books")     // 分页条件查询书籍信息
-    public Result pageBook(@RequestParam(defaultValue = "1") Integer page,
+    public Result pageBook(Integer userId,
+                           @RequestParam(defaultValue = "1") Integer page,
                            @RequestParam(defaultValue = "10") Integer pageSize,
                            String name, String author, String press, String language,
-                           double lowerPrice, double upperPrice,
+                           Double lowerPrice, Double upperPrice,
                            @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate beginPubDate,
                            @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate endPubDate) {
-        PageBean pageBean = userService.pageBook(page, pageSize, name, author, press, language,
+        PageBean pageBean = userService.pageBook(userId, page, pageSize, name, author, press, language,
                 lowerPrice, upperPrice, beginPubDate, endPubDate);
         return Result.success(pageBean);
     }
 
     @GetMapping("/book/{id}")     // 书籍详情
-    public Result getBook(@PathVariable Integer id){
+    public Result getBook(@PathVariable Integer id) {
         log.info("书籍详情, id: {}", id);
         Book book = userService.getBook(id);
         return Result.success(book);
@@ -45,40 +49,40 @@ public class UserController {
     }
 
     @GetMapping("/{id}")    // 个人详情
-    public Result getUser(@PathVariable Integer id){
+    public Result getUser(@PathVariable Integer id) {
         User user = userService.getUser(id);
         return Result.success(user);
     }
 
     @GetMapping("/notifications/{id}")   // 通知信息
     public Result getNotification(@RequestParam(defaultValue = "1") Integer page,
-                           @RequestParam(defaultValue = "10") Integer pageSize, @PathVariable Integer id) {
+                                  @RequestParam(defaultValue = "10") Integer pageSize, @PathVariable Integer id) {
         PageBean pageBean = userService.getNotification(page, pageSize, id);
         return Result.success(pageBean);
     }
 
     @PutMapping("/notifications/setIsRead")   // 设置已读
-    public Result setIsRead(@RequestBody List<Integer> ids){
+    public Result setIsRead(@RequestBody List<Integer> ids) {
         userService.setIsRead(ids);
         return Result.success();
     }
 
     @PutMapping("/notifications/setIsVisual")   // “删除”, 设置为不显示
-    public Result setIsVisual(@RequestBody List<Integer> ids){
+    public Result setIsVisual(@RequestBody List<Integer> ids) {
         userService.setIsVisual(ids);
         return Result.success();
     }
 
     @Log
     @PostMapping("/lend/saveLend")   // 借阅行为, 插入借阅记录
-    public Result lendBook(@RequestBody Lend lend){
+    public Result lendBook(@RequestBody Lend lend) {
         log.info("新增借阅记录, lend: {}", lend);
         return userService.lendBook(lend);
     }
 
     @Log
     @PutMapping("/lend/back")   // 归还书籍
-    public Result backBook(@RequestParam Integer id){
+    public Result backBook(@RequestParam Integer id) {
         log.info("书籍归还记录, id: {}", id);
         userService.backBook(id);
         return Result.success();
@@ -86,19 +90,25 @@ public class UserController {
 
     @Log
     @PutMapping("/lend/delay")   // 延长借阅
-    public Result delayBook(@RequestBody Integer id){
+    public Result delayBook(@RequestBody Integer id) {
         log.info("书籍归还记录, lend: {}", id);
         userService.delayBook(id);
         return Result.success();
     }
 
     @Log
-    @PutMapping("/user/updateUser")    // 更新用户信息
-    public Result updateUser(@RequestBody User user){
+    @PutMapping("/updateUser")    // 更新用户信息
+    public Result updateUser(@RequestBody User user) {
         log.info("更新用户信息: {}", user);
         return userService.updateUser(user);
     }
 
+    @Log
+    @PutMapping("/starts")  // 用户点赞/取消点赞
+    public Result updateStar(@RequestBody StartUpdateRequest startUpdateRequest) {
+        log.info("点赞信息: {}", startUpdateRequest);
+        return userService.updateStar(startUpdateRequest.getUserId(), startUpdateRequest.getBookId(), startUpdateRequest.getIsLike());
+    }
 
 
 }

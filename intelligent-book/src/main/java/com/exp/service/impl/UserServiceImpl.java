@@ -4,8 +4,11 @@ import com.exp.config.AppConfig;
 import com.exp.mapper.UserMapper;
 import com.exp.pojo.*;
 import com.exp.service.UserService;
+import com.github.pagehelper.Page;
+import com.github.pagehelper.PageHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,9 +22,25 @@ public class UserServiceImpl implements UserService {
     @Autowired
     private UserMapper userMapper;
 
+    @Autowired
+    private BCryptPasswordEncoder passwordEncoder;
+
+
     @Override
-    public PageBean pageBook(Integer page, Integer pageSize, String name, String author, String press, String language, double lowerPrice, double upperPrice, LocalDate beginPubDate, LocalDate endPubDate) {
-        return null;
+    public PageBean pageBook(Integer userId, Integer page, Integer pageSize, String name, String author, String press, String language,
+                             Double lowerPrice, Double upperPrice, LocalDate beginPubDate, LocalDate endPubDate) {
+        // 设置分页参数 —— 页码, 记录数
+        PageHelper.startPage(page, pageSize);
+        // 执行查询
+        List<Book> bookList = userMapper.bookList(name, author, press, language, lowerPrice, upperPrice, beginPubDate, endPubDate);
+        // 点赞信息
+        for (Book book : bookList) {
+            Integer liked = userMapper.existsLike(userId, book.getId()) ? 1 : 0;
+            book.setIsLike(liked);
+        }
+        Page<Book> p = (Page<Book>) bookList;
+        // 封装PageBean对象
+        return new PageBean(p.getTotal(), p.getResult());
     }
 
     @Override
@@ -70,6 +89,8 @@ public class UserServiceImpl implements UserService {
     @Override
     public Result updateUser(User user) {
         try {
+            String hashedPassword = passwordEncoder.encode(user.getPassword());
+            user.setPassword(hashedPassword);
             user.setCreateTime(LocalDateTime.now());
             user.setUpdateTime(LocalDateTime.now());
 
@@ -143,6 +164,23 @@ public class UserServiceImpl implements UserService {
     @Override
     public void delayBook(Integer id) {
         userMapper.delayBook(id, AppConfig.DEFAULT_RENEWAL_DURATION_DAYS);
+    }
+
+    @Transactional
+    @Override
+    public Result updateStar(Integer userId, Integer bookId, Integer isLike) {
+        if (isLike == 1 && !userMapper.existsLike(userId, bookId)) {
+            // 点赞操作
+            userMapper.insertLike(userId, bookId);
+            userMapper.incrementStars(bookId);
+            return Result.success();
+        } else if (isLike == 0 || userMapper.existsLike(userId, bookId)) {
+            // 取消点赞操作
+            userMapper.deleteLike(userId, bookId);
+            userMapper.decrementStars(bookId);
+            return Result.success();
+        }
+        return Result.error("You have done useless repetitive operations.");
     }
 
 

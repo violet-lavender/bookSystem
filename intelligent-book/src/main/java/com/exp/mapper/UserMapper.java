@@ -13,6 +13,11 @@ import java.util.List;
 @Mapper
 public interface UserMapper {
 
+    // 查询书籍信息
+    List<Book> bookList(@Param("name") String name, @Param("author") String author, @Param("press") String press,
+                        @Param("language") String language, @Param("lowerPrice") Double lowerPrice, @Param("upperPrice") Double upperPrice,
+                        @Param("beginPubDate") LocalDate beginPubDate, @Param("endPubDate") LocalDate endPubDate);
+
     // 查询书籍详情
     @Select("select * from tb_book where id = #{id}")
     Book getBookById(@Param("id") Integer id);
@@ -95,4 +100,25 @@ public interface UserMapper {
 
     // “删除"消息
     void setIsVisual(@Param("ids") List<Integer> ids);
+
+    // 是否存在点赞信息
+    @Select("select exists(select * from tb_like where user_id = #{userId} and book_id = #{bookId})")
+    boolean existsLike(@Param("userId") Integer userId, @Param("bookId") Integer bookId);
+
+    // 插入点赞信息
+    @Insert("insert into tb_like(user_id, book_id, create_time) values (#{userId}, #{bookId},now())")
+    void insertLike(@Param("userId") Integer userId, @Param("bookId") Integer bookId);
+
+    // 删除点赞信息
+    @Delete("delete from tb_like where user_id = #{userId} and book_id = #{bookId}")
+    void deleteLike(@Param("userId") Integer userId, @Param("bookId") Integer bookId);
+
+    // 点赞+1
+    @Update("update tb_book set stars = stars + 1, update_time = now() where id = #{bookId}")
+    void incrementStars(@Param("bookId") Integer bookId);
+
+    // 点赞1
+    @Update("update tb_book set stars = stars - 1, update_time = now() where id = #{bookId}")
+    void decrementStars(@Param("bookId") Integer bookId);
+
 }

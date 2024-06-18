@@ -1,6 +1,7 @@
 package com.exp.controller;
 
 import com.exp.anno.Log;
+import com.exp.anno.RequiresRole;
 import com.exp.dto.UserStatusUpdateRequest;
 import com.exp.pojo.*;
 import com.exp.service.AdminService;
@@ -13,6 +14,7 @@ import java.util.List;
 @Slf4j  // 日志记录注解 内部定义了log对象
 @RequestMapping("/admins")   // 抽取公共请求路径
 @RestController
+@RequiresRole({Role.ADMIN}) // 权限管理
 public class AdminController {
 
     @Autowired
@@ -99,7 +101,7 @@ public class AdminController {
     }
 
     @Log
-    @PutMapping("/user/setIsEnabled1")   //启用用户, 解除黑名单
+    @PutMapping("/user/setIsEnabled")   //启用/禁用用户, 解除/加入黑名单
     public Result userIsEnabled(@RequestBody UserStatusUpdateRequest request){
         adminService.updateUserStatus(request.getId(), request.getIsEnabled());
         return Result.success();

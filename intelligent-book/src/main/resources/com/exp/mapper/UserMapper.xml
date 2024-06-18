@@ -4,6 +4,21 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.exp.mapper.UserMapper">
 
+    <!-- 书籍查询 -->
+    <select id="bookList" resultType="com.exp.pojo.Book">
+        select *
+        from tb_book
+        <where>
+            <if test="name != null and name != ''">name like concat('%', #{name}, '%')</if>
+            <if test="author != null and author != ''">author like concat('%', #{author}, '%')</if>
+            <if test="press != null and press != ''">press like concat('%', #{press}, '%')</if>
+            <if test="language != null and language != ''">language like concat('%', #{language}, '%')</if>
+            <if test="lowerPrice != null and end != null">and price between #{lowerPrice} and #{upperPrice}</if>
+            <if test="beginPubDate != null and endPubDate != null">and pub_date between #{beginPubDate} and #{endPubDate}</if>
+        </where>
+        order by stars desc, lend_frequency desc, update_time desc
+    </select>
+
     <!-- 更新用户信息 -->
     <update id="updateUser">update tb_user
         <set>

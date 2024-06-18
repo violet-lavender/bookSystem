@@ -7,8 +7,8 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 public interface UserService {
-    PageBean pageBook(Integer page, Integer pageSize, String name, String author, String press, String language,
-                      double lowerPrice, double upperPrice, LocalDate beginPubDate, LocalDate endPubDate);
+    PageBean pageBook(Integer userId, Integer page, Integer pageSize, String name, String author, String press, String language,
+                      Double lowerPrice, Double upperPrice, LocalDate beginPubDate, LocalDate endPubDate);
 
     Book getBook(Integer id);
 
@@ -31,4 +31,7 @@ public interface UserService {
     void backBook(Integer id);
 
     void delayBook(Integer id);
+
+    Result updateStar(Integer userId, Integer bookId, Integer isLike);
+
 }

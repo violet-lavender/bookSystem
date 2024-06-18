@@ -11,10 +11,10 @@
         <where>
             <if test="name != null and name != ''">name like concat('%', #{name}, '%')</if>
             <if test="author != null and author != ''">author like concat('%', #{author}, '%')</if>
-            <if test="press != null">press like concat('%', #{press}, '%')</if>
+            <if test="press != null and press != ''">press like concat('%', #{press}, '%')</if>
             <if test="language != null and language != ''">language like concat('%', #{language}, '%')</if>
         </where>
-        order by lend_frequency desc, update_time desc
+        order by stars desc, lend_frequency desc, update_time desc
     </select>
 
 
