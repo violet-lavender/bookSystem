@@ -42,6 +42,15 @@ public interface UserMapper {
     @Select("select * from tb_notification where user_id = #{userId} and is_visual = 1 order by is_read, create_time desc limit #{start}, #{pageSize}")
     List<Notification> notificationListByUserId(@Param("start") Integer start, @Param("pageSize") Integer pageSize, @Param("userId") Integer userId);
 
+    // 查询个人收藏总数
+    @Select("select count(*) from tb_like where user_id = #{userId}")
+    Long countIsLikeByUserId(@Param("userId") Integer userId);
+
+    // 查询个人收藏
+    @Select("select * from tb_like where user_id = #{userId} order by create_time desc limit #{start}, #{pageSize}")
+    List<Notification> isLikeListByUserId(@Param("start") Integer start, @Param("pageSize") Integer pageSize, @Param("userId") Integer userId);
+
+
     // 借阅, 插入lend信息
     @Insert("insert into tb_lend(user_id, book_id, duration, lend_date, back_date, create_time, update_time)" +
             "values (#{userId}, #{bookId}, #{duration}, #{lendDate}, #{backDate}, #{createTime}, #{updateTime})")

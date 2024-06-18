@@ -43,6 +43,8 @@ public class LoginService {
                 User user = loginMapper.getUserByUsername(username);
                 if (user == null || !passwordEncoder.matches(password, user.getPassword())) {
                     return Result.error("Invalid username or password");
+                } else if (user.getIsEnabled() == 0) {
+                    return Result.error("You have been added to the blacklist and cannot log in");
                 } else {
                     Map<String, Object> claims = new HashMap<>();
                     claims.put("role", role);
@@ -71,8 +73,7 @@ public class LoginService {
     }
 
     public Result registerUser(RegisterRequest registerRequest) {
-        if (registerRequest.getUsername() == null || registerRequest.getPassword() == null
-                || registerRequest.getName() == null || registerRequest.getGender() == null) {
+        if (registerRequest.getUsername() == null || registerRequest.getPassword() == null) {
             return Result.error("All fields are required.");
         }
         try {

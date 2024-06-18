@@ -106,12 +106,23 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public PageBean getNotification(Integer page, Integer pageSize, Integer id) {
+    public PageBean pageNotification(Integer page, Integer pageSize, Integer id) {
         // 获取总记录数
         Long count = userMapper.countNotificationByUserId(id);
         // 获取分页查询结果列表, 起始索引 = (页码 - 1) * 记录数, 注意索引从0开始, 而页码是从1开始的
         Integer start = (page - 1) * pageSize;
         List<Notification> notificationList = userMapper.notificationListByUserId(start, pageSize, id);
+        // 封装PageBean对象
+        return new PageBean(count, notificationList);
+    }
+
+    @Override
+    public PageBean pageIsLike(Integer page, Integer pageSize, Integer id) {
+        // 获取总记录数
+        Long count = userMapper.countIsLikeByUserId(id);
+        // 获取分页查询结果列表, 起始索引 = (页码 - 1) * 记录数, 注意索引从0开始, 而页码是从1开始的
+        Integer start = (page - 1) * pageSize;
+        List<Notification> notificationList = userMapper.isLikeListByUserId(start, pageSize, id);
         // 封装PageBean对象
         return new PageBean(count, notificationList);
     }
@@ -134,7 +145,6 @@ public class UserServiceImpl implements UserService {
     }
 
     // 移除黑名单
-    @Transactional
     @Override
     public void removeUserFromBlacklist(Integer userId) {
         Notification notification = new Notification();
@@ -183,6 +193,12 @@ public class UserServiceImpl implements UserService {
         return Result.error("You have done useless repetitive operations.");
     }
 
+    @Transactional
+    @Override
+    public void removeIsLike(Integer userId, Integer bookId) {
+        userMapper.deleteLike(userId, bookId);
+        userMapper.decrementStars(bookId);
+    }
 
 }
 

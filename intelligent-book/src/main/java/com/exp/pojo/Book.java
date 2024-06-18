@@ -28,5 +28,5 @@ public class Book {
     private LocalDateTime createTime;
     private LocalDateTime updateTime;
 
-    private Integer isLike; // 点赞信息, 0: 未点赞, 1: 已点赞
+    private Integer isLike; // 点赞(收藏)信息, 0: 未点赞, 1: 已点赞
 }

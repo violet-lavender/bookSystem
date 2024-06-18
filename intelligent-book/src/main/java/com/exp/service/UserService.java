@@ -13,12 +13,16 @@ public interface UserService {
     Book getBook(Integer id);
 
     PageBean pageLend(Integer page, Integer pageSize, Integer id);
+
     User getUser(Integer id);
+
     Result lendBook(Lend lend);
 
     Result updateUser(User user);
 
-    PageBean getNotification(Integer page, Integer pageSize, Integer id);
+    PageBean pageNotification(Integer page, Integer pageSize, Integer id);
+
+    PageBean pageIsLike(Integer page, Integer pageSize, Integer id);
 
     void blacklistUser(Integer userId);
 
@@ -34,4 +38,6 @@ public interface UserService {
 
     Result updateStar(Integer userId, Integer bookId, Integer isLike);
 
+
+    void removeIsLike(Integer userId, Integer bookId);
 }

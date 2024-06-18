@@ -29,6 +29,7 @@ public class UserController {
                            Double lowerPrice, Double upperPrice,
                            @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate beginPubDate,
                            @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate endPubDate) {
+        log.info("查询书籍信息");
         PageBean pageBean = userService.pageBook(userId, page, pageSize, name, author, press, language,
                 lowerPrice, upperPrice, beginPubDate, endPubDate);
         return Result.success(pageBean);
@@ -44,31 +45,44 @@ public class UserController {
     @GetMapping("/lends/{id}")    // 个人借阅信息
     public Result pageLend(@RequestParam(defaultValue = "1") Integer page,
                            @RequestParam(defaultValue = "10") Integer pageSize, @PathVariable Integer id) {
+        log.info("查询用户{}借阅信息", id);
         PageBean pageBean = userService.pageLend(page, pageSize, id);
         return Result.success(pageBean);
     }
 
     @GetMapping("/{id}")    // 个人详情
     public Result getUser(@PathVariable Integer id) {
+        log.info("用户{}详情", id);
         User user = userService.getUser(id);
         return Result.success(user);
     }
 
     @GetMapping("/notifications/{id}")   // 通知信息
-    public Result getNotification(@RequestParam(defaultValue = "1") Integer page,
-                                  @RequestParam(defaultValue = "10") Integer pageSize, @PathVariable Integer id) {
-        PageBean pageBean = userService.getNotification(page, pageSize, id);
+    public Result pageNotification(@RequestParam(defaultValue = "1") Integer page,
+                                   @RequestParam(defaultValue = "10") Integer pageSize, @PathVariable Integer id) {
+        log.info("查询用户{}通知信息", id);
+        PageBean pageBean = userService.pageNotification(page, pageSize, id);
+        return Result.success(pageBean);
+    }
+
+    @GetMapping("/isLike/{id}")    // 收藏信息
+    public Result pageIsLike(@RequestParam(defaultValue = "1") Integer page,
+                             @RequestParam(defaultValue = "10") Integer pageSize, @PathVariable Integer id) {
+        log.info("查询用户{}收藏信息", id);
+        PageBean pageBean = userService.pageIsLike(page, pageSize, id);
         return Result.success(pageBean);
     }
 
     @PutMapping("/notifications/setIsRead")   // 设置已读
     public Result setIsRead(@RequestBody List<Integer> ids) {
+        log.info("设置已读, ids: {}", ids);
         userService.setIsRead(ids);
         return Result.success();
     }
 
     @PutMapping("/notifications/setIsVisual")   // “删除”, 设置为不显示
     public Result setIsVisual(@RequestBody List<Integer> ids) {
+        log.info("\"删除\"通知, ids: {}", ids);
         userService.setIsVisual(ids);
         return Result.success();
     }
@@ -91,7 +105,7 @@ public class UserController {
     @Log
     @PutMapping("/lend/delay")   // 延长借阅
     public Result delayBook(@RequestBody Integer id) {
-        log.info("书籍归还记录, lend: {}", id);
+        log.info("书籍续借, lend: {}", id);
         userService.delayBook(id);
         return Result.success();
     }
@@ -108,6 +122,14 @@ public class UserController {
     public Result updateStar(@RequestBody StartUpdateRequest startUpdateRequest) {
         log.info("点赞信息: {}", startUpdateRequest);
         return userService.updateStar(startUpdateRequest.getUserId(), startUpdateRequest.getBookId(), startUpdateRequest.getIsLike());
+    }
+
+    @Log
+    @PutMapping("/removeLike")  // 移除收藏
+    public Result removeIsLike(@RequestBody StartUpdateRequest startUpdateRequest) {
+        log.info("移除收藏: {}", startUpdateRequest);
+        userService.removeIsLike(startUpdateRequest.getUserId(), startUpdateRequest.getBookId());
+        return Result.success();
     }
 
 
