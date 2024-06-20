@@ -2,6 +2,7 @@ package com.exp.service.impl;
 
 import com.exp.mapper.AdminMapper;
 import com.exp.mapper.OperateLogMapper;
+import com.exp.mapper.UserMapper;
 import com.exp.pojo.*;
 import com.exp.pojo.Class;
 import com.exp.service.AdminService;
@@ -27,6 +28,9 @@ public class AdminServiceImpl implements AdminService {
     private UserService userService;
 
     @Autowired
+    private UserMapper userMapper;
+
+    @Autowired
     private OperateLogMapper operateLogMapper;
 
     @Autowired
@@ -50,7 +54,12 @@ public class AdminServiceImpl implements AdminService {
 
     @Override
     public List<Class> classList() {
-        return adminMapper.classList();
+        return userMapper.classList();
+    }
+
+    @Override
+    public List<Book> bookListByClass(Integer id) {
+        return userMapper.bookListByClass(id);
     }
 
     @Override
@@ -111,7 +120,7 @@ public class AdminServiceImpl implements AdminService {
             return Result.success();
         } catch (DataIntegrityViolationException e) {
             // 捕获唯一约束违规异常
-            return Result.error("Username already exists.");
+            return Result.error("Some fields already exists.");
         } catch (Exception e) {
             // 捕获其他异常
             return Result.error(e.getMessage());
@@ -128,7 +137,7 @@ public class AdminServiceImpl implements AdminService {
             return Result.success();
         } catch (DataIntegrityViolationException e) {
             // 捕获唯一约束违规异常
-            return Result.error("Username already exists.");
+            return Result.error("Some fields already exists.");
         } catch (Exception e) {
             // 捕获其他异常
             return Result.error(e.getMessage());
@@ -157,7 +166,7 @@ public class AdminServiceImpl implements AdminService {
     @Override
     public Result deleteClass(Integer id) {
         Class clas = adminMapper.getClassById(id);
-        if (clas.getBookCount() != 0){
+        if (clas.getBookCount() != 0) {
             return Result.error("There are still books in this category that you cannot delete.");
         }
         adminMapper.deleteClass(id);
@@ -167,11 +176,11 @@ public class AdminServiceImpl implements AdminService {
     @Transactional
     @Override
     public Result updateClass(Integer id, String name) {
-        if(name == null || name.equals("")){
+        if (name == null || name.equals("")) {
             return Result.error("You entered an invalid null value.");
         }
         Class clas = adminMapper.getClassById(id);
-        if(clas.getName().equals(name)){
+        if (clas.getName().equals(name)) {
             return Result.error("You entered the same value, this is an invalid update.");
         }
         try {

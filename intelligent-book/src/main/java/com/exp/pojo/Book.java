@@ -15,7 +15,7 @@ public class Book {
     private String name;
     private String author;
     private String press;
-    private String ISBN;
+    private String isbn;
     private String image;
     private String introduction;
     private String language;

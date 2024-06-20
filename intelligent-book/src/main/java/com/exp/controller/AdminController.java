@@ -44,6 +44,12 @@ public class AdminController {
         return Result.success(classList);
     }
 
+    @GetMapping("/class/books/{id}")     // 根据类别查询
+    public Result bookListByClass(@PathVariable Integer id){
+        log.info("根据类别{}查询",id);
+        List<Book> bookList  = adminService.bookListByClass(id);
+        return Result.success(bookList);
+    }
 
     @GetMapping("/users")   // 查询用户信息
     public Result pageUser(@RequestParam(defaultValue = "1") Integer page,

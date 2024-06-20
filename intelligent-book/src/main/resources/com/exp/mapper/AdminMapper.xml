@@ -10,9 +10,9 @@
         from tb_book
         <where>
             <if test="name != null and name != ''">name like concat('%', #{name}, '%')</if>
-            <if test="author != null and author != ''">author like concat('%', #{author}, '%')</if>
-            <if test="press != null and press != ''">press like concat('%', #{press}, '%')</if>
-            <if test="language != null and language != ''">language like concat('%', #{language}, '%')</if>
+            <if test="author != null and author != ''">and author like concat('%', #{author}, '%')</if>
+            <if test="press != null and press != ''">and press like concat('%', #{press}, '%')</if>
+            <if test="language != null and language != ''">and language like concat('%', #{language}, '%')</if>
         </where>
         order by stars desc, lend_frequency desc, update_time desc
     </select>

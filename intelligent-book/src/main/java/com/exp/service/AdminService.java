@@ -13,6 +13,8 @@ public interface AdminService {
 
     List<Class> classList();
 
+    List<Book> bookListByClass(Integer id);
+
     PageBean pageUser(Integer page, Integer pageSize);
 
     User getUser(Integer id);

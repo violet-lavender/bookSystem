@@ -35,7 +35,7 @@ public class LoginService {
                     Map<String, Object> claims = new HashMap<>();
                     claims.put("role", role);
                     claims.put("id", admin.getId());
-                    claims.put("name", admin.getUsername());
+                    claims.put("username", admin.getUsername());
                     return Result.success(JwtUtils.generateJwt(claims));
                 }
 
@@ -49,7 +49,7 @@ public class LoginService {
                     Map<String, Object> claims = new HashMap<>();
                     claims.put("role", role);
                     claims.put("id", user.getId());
-                    claims.put("name", user.getUsername());
+                    claims.put("username", user.getUsername());
 
                     return Result.success(JwtUtils.generateJwt(claims));
                 }
@@ -62,7 +62,7 @@ public class LoginService {
                     Map<String, Object> claims = new HashMap<>();
                     claims.put("role", role);
                     claims.put("id", analyst.getId());
-                    claims.put("name", analyst.getUsername());
+                    claims.put("username", analyst.getUsername());
 
                     return Result.success(JwtUtils.generateJwt(claims));
                 }

@@ -3,6 +3,7 @@ package com.exp.service.impl;
 import com.exp.config.AppConfig;
 import com.exp.mapper.UserMapper;
 import com.exp.pojo.*;
+import com.exp.pojo.Class;
 import com.exp.service.UserService;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
@@ -49,6 +50,16 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public List<Class> classList() {
+        return userMapper.classList();
+    }
+
+    @Override
+    public List<Book> bookListByClass(Integer id) {
+        return userMapper.bookListByClass(id);
+    }
+
+    @Override
     public PageBean pageLend(Integer page, Integer pageSize, Integer id) {
         // 获取总记录数
         Long count = userMapper.countLendByUserId(id);
@@ -72,6 +83,7 @@ public class UserServiceImpl implements UserService {
         if (book.getNumber() == 0)
             return Result.error("The book is not available for lending.");
 
+        lend.setLendDate(LocalDate.now());
         lend.setCreateTime(LocalDateTime.now());
         lend.setUpdateTime(LocalDateTime.now());
 
@@ -91,7 +103,6 @@ public class UserServiceImpl implements UserService {
         try {
             String hashedPassword = passwordEncoder.encode(user.getPassword());
             user.setPassword(hashedPassword);
-            user.setCreateTime(LocalDateTime.now());
             user.setUpdateTime(LocalDateTime.now());
 
             userMapper.updateUser(user);
@@ -152,6 +163,8 @@ public class UserServiceImpl implements UserService {
         notification.setMessage("You have been removed from the blacklist.");
         notification.setIsRead(0);
         notification.setCreateTime(LocalDateTime.now());
+
+        userMapper.insertNotification(notification);
 
         userMapper.removeUserFromBlacklist(userId);
     }

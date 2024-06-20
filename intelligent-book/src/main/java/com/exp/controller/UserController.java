@@ -2,8 +2,11 @@ package com.exp.controller;
 
 import com.exp.anno.Log;
 import com.exp.anno.RequiresRole;
+import com.exp.dto.IdRequest;
+import com.exp.dto.IdsRequest;
 import com.exp.dto.StartUpdateRequest;
 import com.exp.pojo.*;
+import com.exp.pojo.Class;
 import com.exp.service.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,6 +45,20 @@ public class UserController {
         return Result.success(book);
     }
 
+    @GetMapping("/classes")     // 类别信息
+    public Result classList(){
+        log.info("查询类别信息");
+        List<Class> classList  = userService.classList();
+        return Result.success(classList);
+    }
+
+    @GetMapping("/class/books/{id}")     // 根据类别查询
+    public Result bookListByClass(@PathVariable Integer id){
+        log.info("根据类别{}查询",id);
+        List<Book> bookList  = userService.bookListByClass(id);
+        return Result.success(bookList);
+    }
+
     @GetMapping("/lends/{id}")    // 个人借阅信息
     public Result pageLend(@RequestParam(defaultValue = "1") Integer page,
                            @RequestParam(defaultValue = "10") Integer pageSize, @PathVariable Integer id) {
@@ -74,16 +91,16 @@ public class UserController {
     }
 
     @PutMapping("/notifications/setIsRead")   // 设置已读
-    public Result setIsRead(@RequestBody List<Integer> ids) {
+    public Result setIsRead(@RequestBody IdsRequest ids) {
         log.info("设置已读, ids: {}", ids);
-        userService.setIsRead(ids);
+        userService.setIsRead(ids.getIds());
         return Result.success();
     }
 
     @PutMapping("/notifications/setIsVisual")   // “删除”, 设置为不显示
-    public Result setIsVisual(@RequestBody List<Integer> ids) {
+    public Result setIsVisual(@RequestBody IdsRequest ids) {
         log.info("\"删除\"通知, ids: {}", ids);
-        userService.setIsVisual(ids);
+        userService.setIsVisual(ids.getIds());
         return Result.success();
     }
 
@@ -96,17 +113,17 @@ public class UserController {
 
     @Log
     @PutMapping("/lend/back")   // 归还书籍
-    public Result backBook(@RequestParam Integer id) {
+    public Result backBook(@RequestBody IdRequest id) {
         log.info("书籍归还记录, id: {}", id);
-        userService.backBook(id);
+        userService.backBook(id.getId());
         return Result.success();
     }
 
     @Log
     @PutMapping("/lend/delay")   // 延长借阅
-    public Result delayBook(@RequestBody Integer id) {
+    public Result delayBook(@RequestBody IdRequest id) {
         log.info("书籍续借, lend: {}", id);
-        userService.delayBook(id);
+        userService.delayBook(id.getId());
         return Result.success();
     }
 
@@ -118,7 +135,7 @@ public class UserController {
     }
 
     @Log
-    @PutMapping("/starts")  // 用户点赞/取消点赞
+    @PutMapping("/stars")  // 用户点赞/取消点赞
     public Result updateStar(@RequestBody StartUpdateRequest startUpdateRequest) {
         log.info("点赞信息: {}", startUpdateRequest);
         return userService.updateStar(startUpdateRequest.getUserId(), startUpdateRequest.getBookId(), startUpdateRequest.getIsLike());

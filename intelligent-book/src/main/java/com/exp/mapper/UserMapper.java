@@ -1,6 +1,7 @@
 package com.exp.mapper;
 
 import com.exp.pojo.Book;
+import com.exp.pojo.Class;
 import com.exp.pojo.Lend;
 import com.exp.pojo.Notification;
 import com.exp.pojo.User;
@@ -22,6 +23,14 @@ public interface UserMapper {
     @Select("select * from tb_book where id = #{id}")
     Book getBookById(@Param("id") Integer id);
 
+    // 查询类别
+    @Select("select * from tb_class order by id")
+    List<Class> classList();
+
+    // 根据类别查询书籍
+    @Select("select * from tb_book where class_id = #{id}")
+    List<Book> bookListByClass(@Param("id") Integer id);
+
     // 查询个人详情
     @Select("select * from tb_user where id = #{id}")
     User getUserById(@Param("id") Integer id);
@@ -35,7 +44,7 @@ public interface UserMapper {
     List<Lend> lendListByUserId(@Param("start") Integer start, @Param("pageSize") Integer pageSize, @Param("userId") Integer userId);
 
     // 查询个人通知总数
-    @Select("select count(*) from tb_notification where user_id = #{userId}")
+    @Select("select count(*) from tb_notification where user_id = #{userId} and is_visual = 1")
     Long countNotificationByUserId(@Param("userId") Integer userId);
 
     // 查询个人通知
@@ -61,7 +70,7 @@ public interface UserMapper {
     void updateBook(@Param("id") Integer id);
 
     // 更新用户借阅信息
-    @Update("update tb_user set lend_frequency = lend_frequency + 1 where id = #{id}")
+    @Update("update tb_user set lend_frequency = lend_frequency + 1, update_time = now() where id = #{id}")
     void updateFrequency(@Param("id") Integer id);
 
     // 查询未按时归还
@@ -69,7 +78,7 @@ public interface UserMapper {
     List<Lend> findOverdueLends(@Param("today") LocalDate today);
 
     // 更新用户的 disFrequency
-    @Update("update tb_user set dis_frequency = dis_frequency + 1 where id = #{id}")
+    @Update("update tb_user set dis_frequency = dis_frequency + 1, update_time = now() where id = #{id}")
     void updateDisFrequency(@Param("id") Integer id);
 
     // 检查用户的逾期次数
@@ -82,7 +91,7 @@ public interface UserMapper {
     void insertNotification(Notification notification);
 
     // 用户加入黑名单
-    @Update("update tb_user set is_enabled = 0, blacklist_until = #{blacklistUntil} where id = #{userId}")
+    @Update("update tb_user set is_enabled = 0, blacklist_until = #{blacklistUntil}, update_time = now() where id = #{userId}")
     void blacklistUser(@Param("userId") Integer userId, @Param("blacklistUntil") LocalDateTime blacklistUntil);
 
     // 查询黑名单
@@ -90,11 +99,11 @@ public interface UserMapper {
     List<User> findUsersInBlacklist();
 
     // 移除黑名单
-    @Update("update tb_user set is_enabled = 1, dis_frequency = 0, blacklist_until = null where id = #{userId}")
+    @Update("update tb_user set is_enabled = 1, dis_frequency = 0, blacklist_until = null, update_time = now() where id = #{userId}")
     void removeUserFromBlacklist(Integer userId);
 
     // 归还书籍
-    @Update("update tb_lend set is_back = 1, back_date = now(), update_time = now() where id = #{id}")
+    @Update("update tb_lend set is_back = 1, back_date = curdate(), update_time = now() where id = #{id}")
     void backBook(@Param("id") Integer id);
 
     // 续借

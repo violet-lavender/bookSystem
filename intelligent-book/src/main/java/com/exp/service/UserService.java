@@ -1,6 +1,7 @@
 package com.exp.service;
 
 import com.exp.pojo.*;
+import com.exp.pojo.Class;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -11,6 +12,11 @@ public interface UserService {
                       Double lowerPrice, Double upperPrice, LocalDate beginPubDate, LocalDate endPubDate);
 
     Book getBook(Integer id);
+
+
+    List<Class> classList();
+
+    List<Book> bookListByClass(Integer id);
 
     PageBean pageLend(Integer page, Integer pageSize, Integer id);
 
@@ -40,4 +46,5 @@ public interface UserService {
 
 
     void removeIsLike(Integer userId, Integer bookId);
+
 }

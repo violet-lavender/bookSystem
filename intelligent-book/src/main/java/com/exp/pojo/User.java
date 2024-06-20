@@ -16,6 +16,10 @@ public class User {
     private String name;
     private Integer gender; // 1 男, 2 女
     private String image;
+    private Integer age;
+    private String address;
+    private String phone;
+    private String email;
     private Integer lendFrequency;
     private Integer disFrequency;
     private Integer isEnabled; // 0: 禁用, 1: 启用

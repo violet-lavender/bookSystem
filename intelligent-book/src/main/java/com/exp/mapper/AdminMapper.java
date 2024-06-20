@@ -17,10 +17,6 @@ public interface AdminMapper {
     @Select("select * from tb_book where id = #{id}")
     Book getBookById(@Param("id") Integer id);
 
-    // 查询类别信息
-    @Select("select * from tb_class order by id")
-    List<Class> classList();
-
     // 用户总记录数
     @Select("select count(*) from tb_user")
     Long countUser();
@@ -55,7 +51,7 @@ public interface AdminMapper {
     // 新增书籍
     @Insert("insert into tb_book(name, author, press, ISBN, image, introduction, language, " +
             "price, pub_date, class_id, number, create_time, update_time) values (#{name}, #{author}, " +
-            "#{press}, #{ISBN}, #{image}, #{introduction}, #{language}, #{price}, #{pubDate}, #{classId}," +
+            "#{press}, #{isbn}, #{image}, #{introduction}, #{language}, #{price}, #{pubDate}, #{classId}," +
             "#{number}, #{createTime}, #{updateTime})")
     void insertBook(Book book);
 
