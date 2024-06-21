@@ -74,7 +74,7 @@ public interface UserMapper {
     void updateFrequency(@Param("id") Integer id);
 
     // 查询未按时归还
-    @Select("select * from tb_lend where back_date < #{today} and is_back = 0")
+    @Select("select * from tb_lend where back_date != null and back_date < #{today} and is_back = 0")
     List<Lend> findOverdueLends(@Param("today") LocalDate today);
 
     // 更新用户的 disFrequency
@@ -135,7 +135,7 @@ public interface UserMapper {
     @Update("update tb_book set stars = stars + 1, update_time = now() where id = #{bookId}")
     void incrementStars(@Param("bookId") Integer bookId);
 
-    // 点赞1
+    // 点赞-1
     @Update("update tb_book set stars = stars - 1, update_time = now() where id = #{bookId}")
     void decrementStars(@Param("bookId") Integer bookId);
 
