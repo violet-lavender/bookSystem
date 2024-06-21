@@ -197,7 +197,7 @@ public class UserServiceImpl implements UserService {
             userMapper.insertLike(userId, bookId);
             userMapper.incrementStars(bookId);
             return Result.success();
-        } else if (isLike == 0 || userMapper.existsLike(userId, bookId)) {
+        } else if (isLike == 0 && userMapper.existsLike(userId, bookId)) {
             // 取消点赞操作
             userMapper.deleteLike(userId, bookId);
             userMapper.decrementStars(bookId);
