@@ -74,7 +74,7 @@ public interface UserMapper {
     void updateFrequency(@Param("id") Integer id);
 
     // 查询未按时归还
-    @Select("select * from tb_lend where back_date != null and back_date < #{today} and is_back = 0")
+    @Select("select * from tb_lend where back_date is not null and back_date < #{today} and is_back = 0")
     List<Lend> findOverdueLends(@Param("today") LocalDate today);
 
     // 更新用户的 disFrequency
