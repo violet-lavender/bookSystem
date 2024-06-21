@@ -84,6 +84,7 @@ public class UserServiceImpl implements UserService {
             return Result.error("The book is not available for lending.");
 
         lend.setLendDate(LocalDate.now());
+        lend.setBackDate(LocalDate.now().plusDays(lend.getDuration()));
         lend.setCreateTime(LocalDateTime.now());
         lend.setUpdateTime(LocalDateTime.now());
 
@@ -197,7 +198,7 @@ public class UserServiceImpl implements UserService {
             userMapper.insertLike(userId, bookId);
             userMapper.incrementStars(bookId);
             return Result.success();
-        } else if (isLike == 0 || userMapper.existsLike(userId, bookId)) {
+        } else if (isLike == 0 && userMapper.existsLike(userId, bookId)) {
             // 取消点赞操作
             userMapper.deleteLike(userId, bookId);
             userMapper.decrementStars(bookId);

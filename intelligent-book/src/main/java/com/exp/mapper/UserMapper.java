@@ -107,7 +107,9 @@ public interface UserMapper {
     void backBook(@Param("id") Integer id);
 
     // 续借
-    @Update("update tb_lend set duration = duration + #{delayDays}, update_time = now() where id = #{id}")
+    @Update("update tb_lend set duration = duration + #{delayDays}, " +
+            "back_date = date_add(back_date, interval #{delayDays} day), " +
+            "update_time = now() where id = #{id}")
     void delayBook(@Param("id") Integer id, @Param("delayDays") Integer delayDays);
 
     // 更新个人信息
@@ -135,7 +137,7 @@ public interface UserMapper {
     @Update("update tb_book set stars = stars + 1, update_time = now() where id = #{bookId}")
     void incrementStars(@Param("bookId") Integer bookId);
 
-    // 点赞1
+    // 点赞-1
     @Update("update tb_book set stars = stars - 1, update_time = now() where id = #{bookId}")
     void decrementStars(@Param("bookId") Integer bookId);
 
