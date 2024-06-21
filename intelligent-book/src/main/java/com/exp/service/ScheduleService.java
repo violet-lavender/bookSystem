@@ -7,6 +7,8 @@ import com.exp.pojo.Lend;
 import com.exp.pojo.Notification;
 import com.exp.pojo.User;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.context.event.ApplicationReadyEvent;
+import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -78,6 +80,13 @@ public class ScheduleService {
                 userService.removeUserFromBlacklist(user.getId());
             }
         }
+    }
+
+    // 应用启动时执行检查任务
+    @EventListener(ApplicationReadyEvent.class)
+    public void onApplicationReady(){
+        checkOverdueLends();
+        checkAndRemoveFromBlacklist();
     }
 
 }
