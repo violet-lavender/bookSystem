@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 import java.util.Date;
+import java.util.List;
 
 @Data
 @NoArgsConstructor
@@ -25,6 +26,8 @@ public class Book {
     private Integer number;
     private Integer lendFrequency;
     private Integer stars;
+    private Integer grade;
+    private List<String> assessList;
     private LocalDateTime createTime;
     private LocalDateTime updateTime;
 

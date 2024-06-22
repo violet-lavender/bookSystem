@@ -14,6 +14,15 @@ import java.util.List;
 @Mapper
 public interface UserMapper {
 
+    @Select("select count(*) from tb_book")
+    Long countBook();
+
+    @Select("select * from tb_book order by create_time desc")
+    List<Book> bookListByTime();
+
+    @Select("select * from tb_book order by garde desc, stars desc")
+    List<Book> bookListByUp();
+
     // 查询书籍信息
     List<Book> bookList(@Param("name") String name, @Param("author") String author, @Param("press") String press,
                         @Param("language") String language, @Param("lowerPrice") Double lowerPrice, @Param("upperPrice") Double upperPrice,
@@ -22,6 +31,10 @@ public interface UserMapper {
     // 查询书籍详情
     @Select("select * from tb_book where id = #{id}")
     Book getBookById(@Param("id") Integer id);
+
+    // 查询书籍评价列表
+    @Select("select assess from tb_lend where book_id = #{id} and assess is not null")
+    List<String> assessList(@Param("id") Integer id);
 
     // 查询类别
     @Select("select * from tb_class order by id")
@@ -59,7 +72,6 @@ public interface UserMapper {
     @Select("select * from tb_like where user_id = #{userId} order by create_time desc limit #{start}, #{pageSize}")
     List<Notification> isLikeListByUserId(@Param("start") Integer start, @Param("pageSize") Integer pageSize, @Param("userId") Integer userId);
 
-
     // 借阅, 插入lend信息
     @Insert("insert into tb_lend(user_id, book_id, duration, lend_date, back_date, create_time, update_time)" +
             "values (#{userId}, #{bookId}, #{duration}, #{lendDate}, #{backDate}, #{createTime}, #{updateTime})")
@@ -83,7 +95,7 @@ public interface UserMapper {
 
     // 检查用户的逾期次数
     @Select("select dis_frequency from tb_user where id = #{id}")
-    int getDisFrequency(@Param("id") Integer id);
+    Integer getDisFrequency(@Param("id") Integer id);
 
     // 插入通知信息
     @Insert("insert into  tb_notification(user_id, message, is_read, create_time) " +
@@ -103,8 +115,21 @@ public interface UserMapper {
     void removeUserFromBlacklist(Integer userId);
 
     // 归还书籍
-    @Update("update tb_lend set is_back = 1, back_date = curdate(), update_time = now() where id = #{id}")
-    void backBook(@Param("id") Integer id);
+    @Update("update tb_lend set is_back = 1, back_date = curdate(), grade = #{grade}, " +
+            "assess = #{assess}, update_time = now() where id = #{id}")
+    void backBook(@Param("id") Integer id, @Param("grade") Integer grade, @Param("assess") String assess);
+
+    // 由id获得lend记录
+    @Select("select * from tb_lend where id = #{id}")
+    Lend getLendById(@Param("id") Integer id);
+
+    // 计算书籍评级
+    @Select("select round(avg(grade)) from tb_lend where book_id = #{bookId} and grade is not null")
+    Integer calculateAverageGrade(@Param("bookId") Integer bookId);
+
+    // 更新书籍评级
+    @Update("update tb_book set garde = #{grade} where id = #{id}")
+    void updateBookGrade(@Param("id") Integer id, @Param("grade") Integer grade);
 
     // 续借
     @Update("update tb_lend set duration = duration + #{delayDays}, " +

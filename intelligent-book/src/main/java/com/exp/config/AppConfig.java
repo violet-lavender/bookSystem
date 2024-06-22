@@ -1,8 +1,12 @@
 package com.exp.config;
 
 public class AppConfig {
+
+    // 默认pageSize
+    public static final String DEFAULT_PAGE_SIZE = "10";
+
     // 默认黑名单时长（以天为单位）
-    public static final int DEFAULT_BLACKLIST_DURATION_DAYS = 15;
+    public static final long DEFAULT_BLACKLIST_DURATION_DAYS = 15;
 
     // 默认黑名单逾期次数
     public static final int DEFAULT_BLACKLIST_OVERDUE_LIMIT = 5;

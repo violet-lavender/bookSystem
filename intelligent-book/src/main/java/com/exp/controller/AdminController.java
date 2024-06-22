@@ -21,6 +21,20 @@ public class AdminController {
     @Autowired
     private AdminService adminService;
 
+    @GetMapping("/booksByTime")  // 最新上架书籍列表
+    public Result bookListByTime(){
+        log.info("由时间查询书籍信息");
+        ListResult listResult = adminService.bookListByTime();
+        return Result.success(listResult);
+    }
+
+    @GetMapping("/booksByUp")   // 评分、收藏书籍列表
+    public Result bookListByUp(){
+        log.info("由热度查询书籍信息");
+        ListResult listResult = adminService.bookListByUp();
+        return Result.success(listResult);
+    }
+
     @GetMapping("/books")     // 分页条件查询书籍信息
     public Result pageBook(@RequestParam(defaultValue = "1") Integer page,
                        @RequestParam(defaultValue = "10") Integer pageSize,

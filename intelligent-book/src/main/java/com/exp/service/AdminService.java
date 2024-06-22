@@ -7,6 +7,10 @@ import java.util.List;
 
 public interface AdminService {
 
+    ListResult bookListByTime();
+
+    ListResult bookListByUp();
+
     PageBean pageBook(Integer page, Integer pageSize, String name, String author, String press, String language);
 
     Book getBook(Integer id);

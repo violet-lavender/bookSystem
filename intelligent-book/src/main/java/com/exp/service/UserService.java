@@ -8,6 +8,13 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 public interface UserService {
+
+    ListResult bookListByTime();
+
+    ListResult bookListByUp();
+
+    ListResult bookListRecommend();
+
     PageBean pageBook(Integer userId, Integer page, Integer pageSize, String name, String author, String press, String language,
                       Double lowerPrice, Double upperPrice, LocalDate beginPubDate, LocalDate endPubDate);
 
@@ -38,7 +45,7 @@ public interface UserService {
 
     void setIsVisual(List<Integer> ids);
 
-    void backBook(Integer id);
+    Result backBook(Integer id, Integer grade, String assess);
 
     void delayBook(Integer id);
 
@@ -46,5 +53,6 @@ public interface UserService {
 
 
     void removeIsLike(Integer userId, Integer bookId);
+
 
 }

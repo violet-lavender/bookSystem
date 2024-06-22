@@ -28,6 +28,29 @@ public class UserServiceImpl implements UserService {
 
 
     @Override
+    public ListResult bookListByTime() {
+        ListResult listResult = new ListResult();
+        listResult.setTotal(userMapper.countBook());
+        List<Book> bookList = userMapper.bookListByTime();
+        listResult.setListResult(bookList);
+        return listResult;
+    }
+
+    @Override
+    public ListResult bookListByUp() {
+        ListResult listResult = new ListResult();
+        listResult.setTotal(userMapper.countBook());
+        List<Book> bookList = userMapper.bookListByUp();
+        listResult.setListResult(bookList);
+        return listResult;
+    }
+
+    @Override
+    public ListResult bookListRecommend() {
+        
+    }
+
+    @Override
     public PageBean pageBook(Integer userId, Integer page, Integer pageSize, String name, String author, String press, String language,
                              Double lowerPrice, Double upperPrice, LocalDate beginPubDate, LocalDate endPubDate) {
         // 设置分页参数 —— 页码, 记录数
@@ -44,9 +67,13 @@ public class UserServiceImpl implements UserService {
         return new PageBean(p.getTotal(), p.getResult());
     }
 
+    @Transactional
     @Override
     public Book getBook(Integer id) {
-        return userMapper.getBookById(id);
+        Book book = userMapper.getBookById(id);
+        List<String> assessList = userMapper.assessList(id);
+        book.setAssessList(assessList);
+        return book;
     }
 
     @Override
@@ -180,9 +207,27 @@ public class UserServiceImpl implements UserService {
         userMapper.setIsVisual(ids);
     }
 
+    @Transactional
     @Override
-    public void backBook(Integer id) {
-        userMapper.backBook(id);
+    public Result backBook(Integer id, Integer grade, String assess) {
+        if (grade == null || assess == null) {
+            return Result.error("You must give your evaluation.");
+        }
+        try {
+            userMapper.backBook(id, grade, assess);
+
+            Lend lend = userMapper.getLendById(id);
+            Integer bookId = lend.getBookId();
+
+            Integer avgGrade = userMapper.calculateAverageGrade(bookId);
+
+            userMapper.updateBookGrade(bookId, avgGrade);
+
+            return Result.success();
+        }catch (Exception e){
+            return Result.error(e.getMessage());
+        }
+
     }
 
     @Override

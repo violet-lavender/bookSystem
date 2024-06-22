@@ -18,6 +18,8 @@ public class Lend {
     private LocalDate lendDate;
     private LocalDate backDate;
     private Integer isBack; // 0: 否, 1: 是
+    private Integer grade;
+    private String assess;
     private LocalDateTime createTime;
     private LocalDateTime updateTime;
 }

@@ -37,6 +37,16 @@ public class AdminServiceImpl implements AdminService {
     private BCryptPasswordEncoder passwordEncoder;
 
     @Override
+    public ListResult bookListByTime() {
+        return userService.bookListByTime();
+    }
+
+    @Override
+    public ListResult bookListByUp() {
+        return userService.bookListByUp();
+    }
+
+    @Override
     public PageBean pageBook(Integer page, Integer pageSize, String name, String author, String press, String language) {
         // 设置分页参数 —— 页码, 记录数
         PageHelper.startPage(page, pageSize);

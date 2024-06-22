@@ -2,6 +2,7 @@ package com.exp.controller;
 
 import com.exp.anno.Log;
 import com.exp.anno.RequiresRole;
+import com.exp.config.AppConfig;
 import com.exp.dto.IdRequest;
 import com.exp.dto.IdsRequest;
 import com.exp.dto.StartUpdateRequest;
@@ -24,10 +25,31 @@ public class UserController {
     @Autowired
     private UserService userService;
 
+    @GetMapping("/booksByTime")  // 最新上架书籍列表
+    public Result bookListByTime(){
+        log.info("由时间查询书籍信息");
+        ListResult listResult = userService.bookListByTime();
+        return Result.success(listResult);
+    }
+
+    @GetMapping("/booksByUp")   // 评分、收藏书籍列表
+    public Result bookListByUp(){
+        log.info("由热度查询书籍信息");
+        ListResult listResult = userService.bookListByUp();
+        return Result.success(listResult);
+    }
+
+    @GetMapping("/booksRecommend")  // 推荐书籍列表
+    public Result bookListRecommend(){
+        log.info("查询用户推荐书籍信息");
+        ListResult listResult = userService.bookListRecommend();
+        return Result.success(listResult);
+    }
+
     @GetMapping("/books")     // 分页条件查询书籍信息
     public Result pageBook(Integer userId,
                            @RequestParam(defaultValue = "1") Integer page,
-                           @RequestParam(defaultValue = "10") Integer pageSize,
+                           @RequestParam(defaultValue = AppConfig.DEFAULT_PAGE_SIZE) Integer pageSize,
                            String name, String author, String press, String language,
                            Double lowerPrice, Double upperPrice,
                            @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate beginPubDate,
@@ -61,7 +83,7 @@ public class UserController {
 
     @GetMapping("/lends/{id}")    // 个人借阅信息
     public Result pageLend(@RequestParam(defaultValue = "1") Integer page,
-                           @RequestParam(defaultValue = "10") Integer pageSize, @PathVariable Integer id) {
+                           @RequestParam(defaultValue = AppConfig.DEFAULT_PAGE_SIZE) Integer pageSize, @PathVariable Integer id) {
         log.info("查询用户{}借阅信息", id);
         PageBean pageBean = userService.pageLend(page, pageSize, id);
         return Result.success(pageBean);
@@ -76,7 +98,7 @@ public class UserController {
 
     @GetMapping("/notifications/{id}")   // 通知信息
     public Result pageNotification(@RequestParam(defaultValue = "1") Integer page,
-                                   @RequestParam(defaultValue = "10") Integer pageSize, @PathVariable Integer id) {
+                                   @RequestParam(defaultValue = AppConfig.DEFAULT_PAGE_SIZE) Integer pageSize, @PathVariable Integer id) {
         log.info("查询用户{}通知信息", id);
         PageBean pageBean = userService.pageNotification(page, pageSize, id);
         return Result.success(pageBean);
@@ -84,7 +106,7 @@ public class UserController {
 
     @GetMapping("/isLike/{id}")    // 收藏信息
     public Result pageIsLike(@RequestParam(defaultValue = "1") Integer page,
-                             @RequestParam(defaultValue = "10") Integer pageSize, @PathVariable Integer id) {
+                             @RequestParam(defaultValue = AppConfig.DEFAULT_PAGE_SIZE) Integer pageSize, @PathVariable Integer id) {
         log.info("查询用户{}收藏信息", id);
         PageBean pageBean = userService.pageIsLike(page, pageSize, id);
         return Result.success(pageBean);
@@ -113,9 +135,9 @@ public class UserController {
 
     @Log
     @PutMapping("/lend/back")   // 归还书籍
-    public Result backBook(@RequestBody IdRequest id) {
-        log.info("书籍归还记录, id: {}", id);
-        userService.backBook(id.getId());
+    public Result backBook(@RequestBody Lend lend) {
+        log.info("书籍归还记录, {}", lend);
+        userService.backBook(lend.getId(), lend.getGrade(), lend.getAssess());
         return Result.success();
     }
 
