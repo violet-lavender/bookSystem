@@ -3,6 +3,7 @@ package com.exp.mapper;
 import com.exp.pojo.*;
 import com.exp.pojo.Class;
 import org.apache.ibatis.annotations.*;
+import org.springframework.security.core.parameters.P;
 
 import java.util.List;
 
@@ -10,7 +11,7 @@ import java.util.List;
 public interface AdminMapper {
 
     // 查询书籍信息
-    List<Book> bookList(@Param("name") String name, @Param("author") String author,
+    List<Book> bookList(@Param("name") String name, @Param("author") String author, @Param("className") String className,
                         @Param("press") String press, @Param("language") String language);
 
     // 查询书籍详情

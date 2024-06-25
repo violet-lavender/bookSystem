@@ -50,12 +50,12 @@ public class UserController {
     public Result pageBook(Integer userId,
                            @RequestParam(defaultValue = "1") Integer page,
                            @RequestParam(defaultValue = AppConfig.DEFAULT_PAGE_SIZE) Integer pageSize,
-                           String name, String author, String press, String language,
+                           String name, String author, String className, String press, String language,
                            Double lowerPrice, Double upperPrice,
                            @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate beginPubDate,
                            @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate endPubDate) {
         log.info("查询书籍信息");
-        PageBean pageBean = userService.pageBook(userId, page, pageSize, name, author, press, language,
+        PageBean pageBean = userService.pageBook(userId, page, pageSize, name, author, className,press, language,
                 lowerPrice, upperPrice, beginPubDate, endPubDate);
         return Result.success(pageBean);
     }
@@ -102,6 +102,13 @@ public class UserController {
         log.info("查询用户{}通知信息", id);
         PageBean pageBean = userService.pageNotification(page, pageSize, id);
         return Result.success(pageBean);
+    }
+
+    @GetMapping("/notification/{id}")   // 通知信息详情
+    public Result getNotification(@PathVariable Integer id) {
+        log.info("查询通知信息{}详情", id);
+        Notification notification = userService.getNotification(id);
+        return Result.success(notification);
     }
 
     @GetMapping("/isLike/{id}")    // 收藏信息

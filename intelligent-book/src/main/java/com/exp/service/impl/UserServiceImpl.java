@@ -45,18 +45,18 @@ public class UserServiceImpl implements UserService {
         return listResult;
     }
 
+    // TODO 推荐算法, 待实现
     @Override
     public ListResult bookListRecommend() {
-        
+        return null;
     }
 
     @Override
-    public PageBean pageBook(Integer userId, Integer page, Integer pageSize, String name, String author, String press, String language,
-                             Double lowerPrice, Double upperPrice, LocalDate beginPubDate, LocalDate endPubDate) {
+    public PageBean pageBook(Integer userId, Integer page, Integer pageSize, String name, String author, String className,String press, String language, Double lowerPrice, Double upperPrice, LocalDate beginPubDate, LocalDate endPubDate) {
         // 设置分页参数 —— 页码, 记录数
         PageHelper.startPage(page, pageSize);
         // 执行查询
-        List<Book> bookList = userMapper.bookList(name, author, press, language, lowerPrice, upperPrice, beginPubDate, endPubDate);
+        List<Book> bookList = userMapper.bookList(name, author, className,press, language, lowerPrice, upperPrice, beginPubDate, endPubDate);
         // 点赞信息
         for (Book book : bookList) {
             Integer liked = userMapper.existsLike(userId, book.getId()) ? 1 : 0;
@@ -107,9 +107,15 @@ public class UserServiceImpl implements UserService {
     public Result lendBook(Lend lend) {
         // 是否可借阅
         Book book = userMapper.getBookById(lend.getBookId());
-        if (book.getNumber() == 0)
-            return Result.error("The book is not available for lending.");
+        if (book.getNumber() == 0) return Result.error("The book is not available for lending.");
 
+        if (lend.getDuration() == null){
+            lend.setDuration(AppConfig.DEFAULT_LEND_DURATION_DAYS);
+        }
+
+        lend.setBookName(book.getName());
+        lend.setBookAuthor(book.getAuthor());
+        lend.setBookClass(book.getClassName());
         lend.setLendDate(LocalDate.now());
         lend.setBackDate(LocalDate.now().plusDays(lend.getDuration()));
         lend.setCreateTime(LocalDateTime.now());
@@ -153,6 +159,11 @@ public class UserServiceImpl implements UserService {
         List<Notification> notificationList = userMapper.notificationListByUserId(start, pageSize, id);
         // 封装PageBean对象
         return new PageBean(count, notificationList);
+    }
+
+    @Override
+    public Notification getNotification(Integer id) {
+        return userMapper.getNotification(id);
     }
 
     @Override
@@ -224,7 +235,7 @@ public class UserServiceImpl implements UserService {
             userMapper.updateBookGrade(bookId, avgGrade);
 
             return Result.success();
-        }catch (Exception e){
+        } catch (Exception e) {
             return Result.error(e.getMessage());
         }
 
@@ -240,7 +251,17 @@ public class UserServiceImpl implements UserService {
     public Result updateStar(Integer userId, Integer bookId, Integer isLike) {
         if (isLike == 1 && !userMapper.existsLike(userId, bookId)) {
             // 点赞操作
-            userMapper.insertLike(userId, bookId);
+            Book book = userMapper.getBookById(bookId);
+
+            Like like = new Like();
+            like.setUserId(userId);
+            like.setBookId(bookId);
+            like.setBookName(book.getName());
+            like.setBookAuthor(book.getAuthor());
+            like.setBookClass(book.getClassName());
+            like.setCreateTime(LocalDateTime.now());
+
+            userMapper.insertLike(like);
             userMapper.incrementStars(bookId);
             return Result.success();
         } else if (isLike == 0 && userMapper.existsLike(userId, bookId)) {

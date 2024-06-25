@@ -23,11 +23,13 @@ public class Book {
     private Double price;
     private Date pubDate;
     private Integer classId;
+    private String className;
     private Integer number;
     private Integer lendFrequency;
     private Integer stars;
     private Integer grade;
     private List<String> assessList;
+    private List<String> tagList;
     private LocalDateTime createTime;
     private LocalDateTime updateTime;
 

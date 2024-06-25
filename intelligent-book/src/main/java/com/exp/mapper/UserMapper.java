@@ -1,10 +1,7 @@
 package com.exp.mapper;
 
-import com.exp.pojo.Book;
+import com.exp.pojo.*;
 import com.exp.pojo.Class;
-import com.exp.pojo.Lend;
-import com.exp.pojo.Notification;
-import com.exp.pojo.User;
 import org.apache.ibatis.annotations.*;
 
 import java.time.LocalDate;
@@ -17,19 +14,19 @@ public interface UserMapper {
     @Select("select count(*) from tb_book")
     Long countBook();
 
-    @Select("select * from tb_book order by create_time desc")
+    @Select("select tb_book.*, tc.name as class_name from tb_book join tb_class tc on tc.id = tb_book.class_id order by create_time desc")
     List<Book> bookListByTime();
 
-    @Select("select * from tb_book order by garde desc, stars desc")
+    @Select("select tb_book.*, tc.name as class_name from tb_book join tb_class tc on tc.id = tb_book.class_id order by garde desc, stars desc")
     List<Book> bookListByUp();
 
     // 查询书籍信息
-    List<Book> bookList(@Param("name") String name, @Param("author") String author, @Param("press") String press,
+    List<Book> bookList(@Param("name") String name, @Param("author") String author, @Param("press") String press, @Param("className") String className,
                         @Param("language") String language, @Param("lowerPrice") Double lowerPrice, @Param("upperPrice") Double upperPrice,
                         @Param("beginPubDate") LocalDate beginPubDate, @Param("endPubDate") LocalDate endPubDate);
 
     // 查询书籍详情
-    @Select("select * from tb_book where id = #{id}")
+    @Select("select tb_book.*, tc.name as class_name from tb_book join tb_class tc on tc.id = tb_book.class_id where tb_book.id = #{id}")
     Book getBookById(@Param("id") Integer id);
 
     // 查询书籍评价列表
@@ -43,6 +40,10 @@ public interface UserMapper {
     // 根据类别查询书籍
     @Select("select * from tb_book where class_id = #{id}")
     List<Book> bookListByClass(@Param("id") Integer id);
+
+    // 根据id获得类别名称
+    @Select("select name from tb_class where id = #{id}")
+    String getClassNameById(@Param("id") Integer id);
 
     // 查询个人详情
     @Select("select * from tb_user where id = #{id}")
@@ -64,6 +65,10 @@ public interface UserMapper {
     @Select("select * from tb_notification where user_id = #{userId} and is_visual = 1 order by is_read, create_time desc limit #{start}, #{pageSize}")
     List<Notification> notificationListByUserId(@Param("start") Integer start, @Param("pageSize") Integer pageSize, @Param("userId") Integer userId);
 
+    // 查询通知详情
+    @Select("select * from tb_notification where id = #{id}")
+    Notification getNotification(@Param("id") Integer id);
+
     // 查询个人收藏总数
     @Select("select count(*) from tb_like where user_id = #{userId}")
     Long countIsLikeByUserId(@Param("userId") Integer userId);
@@ -73,8 +78,8 @@ public interface UserMapper {
     List<Notification> isLikeListByUserId(@Param("start") Integer start, @Param("pageSize") Integer pageSize, @Param("userId") Integer userId);
 
     // 借阅, 插入lend信息
-    @Insert("insert into tb_lend(user_id, book_id, duration, lend_date, back_date, create_time, update_time)" +
-            "values (#{userId}, #{bookId}, #{duration}, #{lendDate}, #{backDate}, #{createTime}, #{updateTime})")
+    @Insert("insert into tb_lend(user_id, book_id, lend_date, duration, back_date, create_time, update_time, book_class, book_name, book_author)" +
+            "values (#{userId}, #{bookId}, #{lendDate}, #{duration}, #{backDate}, #{createTime}, #{updateTime}, #{bookClass}, #{bookName}, #{bookAuthor})")
     void insertLend(Lend lend);
 
     // 更新书籍借阅和数量信息
@@ -151,8 +156,9 @@ public interface UserMapper {
     boolean existsLike(@Param("userId") Integer userId, @Param("bookId") Integer bookId);
 
     // 插入点赞信息
-    @Insert("insert into tb_like(user_id, book_id, create_time) values (#{userId}, #{bookId},now())")
-    void insertLike(@Param("userId") Integer userId, @Param("bookId") Integer bookId);
+    @Insert("insert into tb_like(user_id, book_id, create_time, book_name, book_class, book_author) " +
+            "values (#{userId}, #{bookId}, #{createTime}, #{bookName}, #{bookClass}, #{bookAuthor})")
+    void insertLike(Like like);
 
     // 删除点赞信息
     @Delete("delete from tb_like where user_id = #{userId} and book_id = #{bookId}")

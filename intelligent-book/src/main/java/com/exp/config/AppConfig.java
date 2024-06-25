@@ -3,7 +3,7 @@ package com.exp.config;
 public class AppConfig {
 
     // 默认pageSize
-    public static final String DEFAULT_PAGE_SIZE = "10";
+    public static final String DEFAULT_PAGE_SIZE = "100";
 
     // 默认黑名单时长（以天为单位）
     public static final long DEFAULT_BLACKLIST_DURATION_DAYS = 15;
@@ -13,6 +13,9 @@ public class AppConfig {
 
     // 默认逾期提醒次数
     public static final int DEFAULT_REMINDER_LIMIT = 3;
+
+    // 默认借书时长（以天为单位）
+    public static final int DEFAULT_LEND_DURATION_DAYS = 30;
 
     // 默认续借时长（以天为单位）
     public static final int DEFAULT_RENEWAL_DURATION_DAYS = 10;

@@ -2,6 +2,7 @@ package com.exp.controller;
 
 import com.exp.anno.Log;
 import com.exp.anno.RequiresRole;
+import com.exp.config.AppConfig;
 import com.exp.dto.UserStatusUpdateRequest;
 import com.exp.pojo.*;
 import com.exp.pojo.Class;
@@ -37,10 +38,10 @@ public class AdminController {
 
     @GetMapping("/books")     // 分页条件查询书籍信息
     public Result pageBook(@RequestParam(defaultValue = "1") Integer page,
-                       @RequestParam(defaultValue = "10") Integer pageSize,
-                       String name, String author, String press, String language) {
+                       @RequestParam(defaultValue = AppConfig.DEFAULT_PAGE_SIZE) Integer pageSize,
+                       String name, String author, String className, String press, String language) {
         log.info("查询书籍信息");
-        PageBean pageBean = adminService.pageBook(page, pageSize, name, author, press, language);
+        PageBean pageBean = adminService.pageBook(page, pageSize, name, author, className, press, language);
         return Result.success(pageBean);
     }
 

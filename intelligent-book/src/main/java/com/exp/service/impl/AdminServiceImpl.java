@@ -2,7 +2,6 @@ package com.exp.service.impl;
 
 import com.exp.mapper.AdminMapper;
 import com.exp.mapper.OperateLogMapper;
-import com.exp.mapper.UserMapper;
 import com.exp.pojo.*;
 import com.exp.pojo.Class;
 import com.exp.service.AdminService;
@@ -28,9 +27,6 @@ public class AdminServiceImpl implements AdminService {
     private UserService userService;
 
     @Autowired
-    private UserMapper userMapper;
-
-    @Autowired
     private OperateLogMapper operateLogMapper;
 
     @Autowired
@@ -47,11 +43,11 @@ public class AdminServiceImpl implements AdminService {
     }
 
     @Override
-    public PageBean pageBook(Integer page, Integer pageSize, String name, String author, String press, String language) {
+    public PageBean pageBook(Integer page, Integer pageSize, String name, String author, String className,String press, String language) {
         // 设置分页参数 —— 页码, 记录数
         PageHelper.startPage(page, pageSize);
         // 执行查询
-        List<Book> bookList = adminMapper.bookList(name, author, press, language);
+        List<Book> bookList = adminMapper.bookList(name, author, className, press, language);
         Page<Book> p = (Page<Book>) bookList;
         // 封装PageBean对象
         return new PageBean(p.getTotal(), p.getResult());
@@ -59,17 +55,17 @@ public class AdminServiceImpl implements AdminService {
 
     @Override
     public Book getBook(Integer id) {
-        return adminMapper.getBookById(id);
+        return userService.getBook(id);
     }
 
     @Override
     public List<Class> classList() {
-        return userMapper.classList();
+        return userService.classList();
     }
 
     @Override
     public List<Book> bookListByClass(Integer id) {
-        return userMapper.bookListByClass(id);
+        return userService.bookListByClass(id);
     }
 
     @Override

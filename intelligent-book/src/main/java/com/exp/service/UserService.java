@@ -15,11 +15,10 @@ public interface UserService {
 
     ListResult bookListRecommend();
 
-    PageBean pageBook(Integer userId, Integer page, Integer pageSize, String name, String author, String press, String language,
+    PageBean pageBook(Integer userId, Integer page, Integer pageSize, String name, String author, String className,String press, String language,
                       Double lowerPrice, Double upperPrice, LocalDate beginPubDate, LocalDate endPubDate);
 
     Book getBook(Integer id);
-
 
     List<Class> classList();
 
@@ -34,6 +33,8 @@ public interface UserService {
     Result updateUser(User user);
 
     PageBean pageNotification(Integer page, Integer pageSize, Integer id);
+
+    Notification getNotification(Integer id);
 
     PageBean pageIsLike(Integer page, Integer pageSize, Integer id);
 
@@ -53,6 +54,5 @@ public interface UserService {
 
 
     void removeIsLike(Integer userId, Integer bookId);
-
 
 }

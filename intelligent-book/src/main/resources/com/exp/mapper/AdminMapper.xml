@@ -6,11 +6,12 @@
 
     <!-- 书籍查询 -->
     <select id="bookList" resultType="com.exp.pojo.Book">
-        select *
-        from tb_book
+        select tb_book.*, tc.name as class_name
+        from tb_book join tb_class tc on tc.id = tb_book.class_id
         <where>
-            <if test="name != null and name != ''">name like concat('%', #{name}, '%')</if>
+            <if test="name != null and name != ''">tb_book.name like concat('%', #{name}, '%')</if>
             <if test="author != null and author != ''">and author like concat('%', #{author}, '%')</if>
+            <if test="className != null and className != ''">and tc.name like concat('%', #{className}, '%')</if>
             <if test="press != null and press != ''">and press like concat('%', #{press}, '%')</if>
             <if test="language != null and language != ''">and language like concat('%', #{language}, '%')</if>
         </where>

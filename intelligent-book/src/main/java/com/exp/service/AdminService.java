@@ -11,7 +11,7 @@ public interface AdminService {
 
     ListResult bookListByUp();
 
-    PageBean pageBook(Integer page, Integer pageSize, String name, String author, String press, String language);
+    PageBean pageBook(Integer page, Integer pageSize, String name, String author, String className,String press, String language);
 
     Book getBook(Integer id);
 
