@@ -1,10 +1,14 @@
 package com.exp.service.impl;
 
 import com.exp.config.AppConfig;
+import com.exp.dto.BookGrade;
+import com.exp.dto.RecommendParam;
 import com.exp.mapper.UserMapper;
 import com.exp.pojo.*;
 import com.exp.pojo.Class;
+import com.exp.service.PythonService;
 import com.exp.service.UserService;
+import com.exp.vo.Assess;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,6 +30,9 @@ public class UserServiceImpl implements UserService {
     @Autowired
     private BCryptPasswordEncoder passwordEncoder;
 
+    @Autowired
+    private PythonService pythonService;
+
 
     @Override
     public ListResult bookListByTime() {
@@ -46,17 +53,27 @@ public class UserServiceImpl implements UserService {
     }
 
     // TODO 推荐算法, 待实现
+    @Transactional
     @Override
-    public ListResult bookListRecommend() {
-        return null;
+    public Result bookListRecommend(Integer id) {
+        RecommendParam recommendParam = new RecommendParam();
+        recommendParam.setUserId(id);
+
+        List<BookGrade> bookGradeList = userMapper.bookGradeList();
+        recommendParam.setBookGradeList(bookGradeList);
+
+        List<Integer> bookList = userMapper.bookIdList();
+        recommendParam.setBookIds(bookList);
+
+        return pythonService.booksRecommendForUser(recommendParam);
     }
 
     @Override
-    public PageBean pageBook(Integer userId, Integer page, Integer pageSize, String name, String author, String className,String press, String language, Double lowerPrice, Double upperPrice, LocalDate beginPubDate, LocalDate endPubDate) {
+    public PageBean pageBook(Integer userId, Integer page, Integer pageSize, String name, String author, String className, String press, String language, Double lowerPrice, Double upperPrice, LocalDate beginPubDate, LocalDate endPubDate) {
         // 设置分页参数 —— 页码, 记录数
         PageHelper.startPage(page, pageSize);
         // 执行查询
-        List<Book> bookList = userMapper.bookList(name, author, className,press, language, lowerPrice, upperPrice, beginPubDate, endPubDate);
+        List<Book> bookList = userMapper.bookList(name, author, className, press, language, lowerPrice, upperPrice, beginPubDate, endPubDate);
         // 点赞信息
         for (Book book : bookList) {
             Integer liked = userMapper.existsLike(userId, book.getId()) ? 1 : 0;
@@ -71,7 +88,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public Book getBook(Integer id) {
         Book book = userMapper.getBookById(id);
-        List<String> assessList = userMapper.assessList(id);
+        List<Assess> assessList = userMapper.assessList(id);
         book.setAssessList(assessList);
         return book;
     }
@@ -109,7 +126,7 @@ public class UserServiceImpl implements UserService {
         Book book = userMapper.getBookById(lend.getBookId());
         if (book.getNumber() == 0) return Result.error("The book is not available for lending.");
 
-        if (lend.getDuration() == null){
+        if (lend.getDuration() == null) {
             lend.setDuration(AppConfig.DEFAULT_LEND_DURATION_DAYS);
         }
 
@@ -135,8 +152,11 @@ public class UserServiceImpl implements UserService {
     @Override
     public Result updateUser(User user) {
         try {
-            String hashedPassword = passwordEncoder.encode(user.getPassword());
-            user.setPassword(hashedPassword);
+            if (user.getPassword() != null && !user.getPassword().equals("")) {
+                String hashedPassword = passwordEncoder.encode(user.getPassword());
+                user.setPassword(hashedPassword);
+            }
+
             user.setUpdateTime(LocalDateTime.now());
 
             userMapper.updateUser(user);
@@ -172,7 +192,7 @@ public class UserServiceImpl implements UserService {
         Long count = userMapper.countIsLikeByUserId(id);
         // 获取分页查询结果列表, 起始索引 = (页码 - 1) * 记录数, 注意索引从0开始, 而页码是从1开始的
         Integer start = (page - 1) * pageSize;
-        List<Notification> notificationList = userMapper.isLikeListByUserId(start, pageSize, id);
+        List<Like> notificationList = userMapper.isLikeListByUserId(start, pageSize, id);
         // 封装PageBean对象
         return new PageBean(count, notificationList);
     }

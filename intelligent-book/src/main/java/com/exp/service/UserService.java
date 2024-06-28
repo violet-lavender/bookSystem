@@ -13,7 +13,7 @@ public interface UserService {
 
     ListResult bookListByUp();
 
-    ListResult bookListRecommend();
+    Result bookListRecommend(Integer id);
 
     PageBean pageBook(Integer userId, Integer page, Integer pageSize, String name, String author, String className,String press, String language,
                       Double lowerPrice, Double upperPrice, LocalDate beginPubDate, LocalDate endPubDate);

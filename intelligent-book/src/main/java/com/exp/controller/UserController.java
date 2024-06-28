@@ -26,24 +26,23 @@ public class UserController {
     private UserService userService;
 
     @GetMapping("/booksByTime")  // 最新上架书籍列表
-    public Result bookListByTime(){
+    public Result bookListByTime() {
         log.info("由时间查询书籍信息");
         ListResult listResult = userService.bookListByTime();
         return Result.success(listResult);
     }
 
     @GetMapping("/booksByUp")   // 评分、收藏书籍列表
-    public Result bookListByUp(){
+    public Result bookListByUp() {
         log.info("由热度查询书籍信息");
         ListResult listResult = userService.bookListByUp();
         return Result.success(listResult);
     }
 
     @GetMapping("/booksRecommend")  // 推荐书籍列表
-    public Result bookListRecommend(){
+    public Result bookListRecommend(Integer id) {
         log.info("查询用户推荐书籍信息");
-        ListResult listResult = userService.bookListRecommend();
-        return Result.success(listResult);
+        return userService.bookListRecommend(id);
     }
 
     @GetMapping("/books")     // 分页条件查询书籍信息
@@ -55,7 +54,7 @@ public class UserController {
                            @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate beginPubDate,
                            @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate endPubDate) {
         log.info("查询书籍信息");
-        PageBean pageBean = userService.pageBook(userId, page, pageSize, name, author, className,press, language,
+        PageBean pageBean = userService.pageBook(userId, page, pageSize, name, author, className, press, language,
                 lowerPrice, upperPrice, beginPubDate, endPubDate);
         return Result.success(pageBean);
     }
@@ -68,16 +67,16 @@ public class UserController {
     }
 
     @GetMapping("/classes")     // 类别信息
-    public Result classList(){
+    public Result classList() {
         log.info("查询类别信息");
-        List<Class> classList  = userService.classList();
+        List<Class> classList = userService.classList();
         return Result.success(classList);
     }
 
-    @GetMapping("/class/books/{id}")     // 根据类别查询
-    public Result bookListByClass(@PathVariable Integer id){
-        log.info("根据类别{}查询",id);
-        List<Book> bookList  = userService.bookListByClass(id);
+    @GetMapping("/class/books/{id}")     // 根据类别查询L
+    public Result bookListByClass(@PathVariable Integer id) {
+        log.info("根据类别{}查询", id);
+        List<Book> bookList = userService.bookListByClass(id);
         return Result.success(bookList);
     }
 

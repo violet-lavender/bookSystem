@@ -14,7 +14,7 @@ public class OBSUtils {
     private final String ak = System.getenv("OBS_ACCESS_KEY_ID");
     private final String sk = System.getenv("OBS_SECRET_ACCESS_KEY_ID");
     private final String endPoint = "https://obs.cn-north-4.myhuaweicloud.com";
-    private final String bucketName = "web-exp";
+    private final String bucketName = "com-book";
 
     public String upload(MultipartFile file) throws IOException {
         // 获取上传的文件的输入流

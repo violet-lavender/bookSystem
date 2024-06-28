@@ -1,5 +1,6 @@
 package com.exp.pojo;
 
+import com.exp.vo.Assess;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -26,12 +27,11 @@ public class Book {
     private String className;
     private Integer number;
     private Integer lendFrequency;
+    private Integer isLike; // 点赞(收藏)信息, 0: 未点赞, 1: 已点赞
     private Integer stars;
     private Integer grade;
-    private List<String> assessList;
+    private List<Assess> assessList;
     private List<String> tagList;
     private LocalDateTime createTime;
     private LocalDateTime updateTime;
-
-    private Integer isLike; // 点赞(收藏)信息, 0: 未点赞, 1: 已点赞
 }
