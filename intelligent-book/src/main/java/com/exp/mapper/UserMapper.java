@@ -1,5 +1,6 @@
 package com.exp.mapper;
 
+import com.exp.dto.BookAssess;
 import com.exp.dto.BookGrade;
 import com.exp.pojo.*;
 import com.exp.pojo.Class;
@@ -8,7 +9,6 @@ import org.apache.ibatis.annotations.*;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.HashMap;
 import java.util.List;
 
 @Mapper
@@ -42,12 +42,12 @@ public interface UserMapper {
     List<Integer> bookIdList();
 
     // 根据ids查询书籍列表
-    @Select("select * from tb_book where id in (#{ids})")
     List<Book> bookListByIds(@Param("ids") List<Integer> ids);
 
     // 查询书籍评价列表
     @Select("select username, grade, assess, tb_lend.update_time as update_time" +
-            " from tb_lend join tb_user tu on tu.id = tb_lend.user_id where book_id = #{id} and assess is not null")
+            " from tb_lend join tb_user tu on tu.id = tb_lend.user_id " +
+            "where book_id = #{id} and assess is not null order by update_time desc")
     List<Assess> assessList(@Param("id") Integer id);
 
     // 查询类别
@@ -98,9 +98,13 @@ public interface UserMapper {
     @Insert("insert into tb_lend(user_id, book_id, lend_date, duration, back_date, create_time, update_time, book_class, book_name, book_author)" + "values (#{userId}, #{bookId}, #{lendDate}, #{duration}, #{backDate}, #{createTime}, #{updateTime}, #{bookClass}, #{bookName}, #{bookAuthor})")
     void insertLend(Lend lend);
 
-    // 更新书籍借阅和数量信息
+    // 借书时更新书籍借阅和数量信息
     @Update("update tb_book set number = number - 1, lend_frequency = lend_frequency + 1, update_time = now() where id = #{id}")
     void updateBook(@Param("id") Integer id);
+
+    // 归还时更新书籍数量信息
+    @Update("update tb_book set number = number + 1, update_time = now() where id = #{id}")
+    void ReturnBook(@Param("id") Integer id);
 
     // 更新用户借阅信息
     @Update("update tb_user set lend_frequency = lend_frequency + 1, update_time = now() where id = #{id}")
@@ -142,14 +146,6 @@ public interface UserMapper {
     @Select("select * from tb_lend where id = #{id}")
     Lend getLendById(@Param("id") Integer id);
 
-    // 计算书籍评级
-    @Select("select round(avg(grade)) from tb_lend where book_id = #{bookId} and grade is not null")
-    Integer calculateAverageGrade(@Param("bookId") Integer bookId);
-
-    // 更新书籍评级
-    @Update("update tb_book set grade = #{grade} where id = #{id}")
-    void updateBookGrade(@Param("id") Integer id, @Param("grade") Integer grade);
-
     // 续借
     @Update("update tb_lend set duration = duration + #{delayDays}, " + "back_date = date_add(back_date, interval #{delayDays} day), " + "update_time = now() where id = #{id}")
     void delayBook(@Param("id") Integer id, @Param("delayDays") Integer delayDays);
@@ -182,5 +178,17 @@ public interface UserMapper {
     // 点赞-1
     @Update("update tb_book set stars = stars - 1, update_time = now() where id = #{bookId}")
     void decrementStars(@Param("bookId") Integer bookId);
+
+    // 查询书籍评论信息
+    @Select("select book_name as book, assess from tb_lend where book_id = #{bookId} and assess is not null")
+    List<BookAssess> bookAssessList(Integer bookId);
+
+    // 更新TagList信息
+    @Insert("insert into tb_book_tag(book_id, tag) values (#{bookId}, #{tag})")
+    void updateTagList(@Param("bookId") Integer bookId, @Param("tag") String tag);
+
+    // 查询TagList列表
+    @Select("select tag from tb_book_tag where book_id = #{id}")
+    List<String> getTagList(Integer id);
 
 }

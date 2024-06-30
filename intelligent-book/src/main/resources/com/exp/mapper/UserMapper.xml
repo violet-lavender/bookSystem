@@ -76,5 +76,15 @@
         </foreach>
     </update>
 
+    <!-- 根据书籍ID列表查询书籍信息 -->
+    <select id="bookListByIds" resultType="com.exp.pojo.Book" parameterType="java.util.List">
+        select *
+        from tb_book
+        where id in
+        <foreach collection="ids" item="id" separator="," open="(" close=")">
+            #{id}
+        </foreach>
+    </select>
+
 
 </mapper>

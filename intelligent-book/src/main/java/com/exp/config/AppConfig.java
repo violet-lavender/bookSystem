@@ -25,6 +25,9 @@ public class AppConfig {
     public static final Integer DEFAULT_OPERATE_USER = -1;
     public static final String DEFAULT_OPERATE_USERNAME = "System";
 
+    public static final Integer DEFAULT_RECOMMEND_PARAM_K = 10;
+    public static final Integer DEFAULT_RECOMMEND_PARAM_N = 5;
+
     private AppConfig() {
         // 私有构造方法防止实例化
     }

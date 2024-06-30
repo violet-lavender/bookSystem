@@ -5,6 +5,7 @@ import com.exp.utils.OBSUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -19,7 +20,7 @@ public class UploadController {
 
     // 文件上传时触发请求
     @PostMapping("/upload")
-    public Result upload(MultipartFile image) throws IOException {
+    public Result upload(@RequestParam("image") MultipartFile image) throws IOException {
         log.info("文件上传, 文件名: {}", image.getOriginalFilename());
 
         // 调用华为云OBS工具类进行文件上传

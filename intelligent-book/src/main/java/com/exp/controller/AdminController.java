@@ -68,7 +68,7 @@ public class AdminController {
 
     @GetMapping("/users")   // 查询用户信息
     public Result pageUser(@RequestParam(defaultValue = "1") Integer page,
-                           @RequestParam(defaultValue = "10") Integer pageSize) {
+                           @RequestParam(defaultValue = "100") Integer pageSize) {
         log.info("查询用户信息");
         PageBean pageBean = adminService.pageUser(page, pageSize);
         return Result.success(pageBean);
@@ -97,7 +97,7 @@ public class AdminController {
 
     @GetMapping("/lends")   // 查询借阅信息
     public Result pageLend(@RequestParam(defaultValue = "1") Integer page,
-                           @RequestParam(defaultValue = "10") Integer pageSize) {
+                           @RequestParam(defaultValue = "1000") Integer pageSize) {
         log.info("查询借阅信息");
         PageBean pageBean = adminService.pageLend(page, pageSize);
         return Result.success(pageBean);
@@ -105,7 +105,7 @@ public class AdminController {
 
     @GetMapping("/OperateLogs")   // 查询系统日志
     public Result pageLog(@RequestParam(defaultValue = "1") Integer page,
-                           @RequestParam(defaultValue = "10") Integer pageSize) {
+                           @RequestParam(defaultValue = "1000") Integer pageSize) {
         log.info("查询系统日志信息");
         PageBean pageBean = adminService.pageOperateLog(page, pageSize);
         return Result.success(pageBean);

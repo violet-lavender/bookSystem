@@ -1,16 +1,19 @@
 package com.exp.service.impl;
 
 import com.exp.config.AppConfig;
+import com.exp.dto.BookAssess;
 import com.exp.dto.BookGrade;
 import com.exp.dto.RecommendParam;
 import com.exp.mapper.UserMapper;
 import com.exp.pojo.*;
 import com.exp.pojo.Class;
-import com.exp.service.PythonService;
+import com.exp.service.RecommendService;
+import com.exp.service.TagListService;
 import com.exp.service.UserService;
 import com.exp.vo.Assess;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -23,6 +26,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.List;
 
 @Service
+@Slf4j
 public class UserServiceImpl implements UserService {
     @Autowired
     private UserMapper userMapper;
@@ -31,8 +35,10 @@ public class UserServiceImpl implements UserService {
     private BCryptPasswordEncoder passwordEncoder;
 
     @Autowired
-    private PythonService pythonService;
+    private RecommendService recommendService;
 
+    @Autowired
+    private TagListService tagListService;
 
     @Override
     public ListResult bookListByTime() {
@@ -52,7 +58,6 @@ public class UserServiceImpl implements UserService {
         return listResult;
     }
 
-    // TODO 推荐算法, 待实现
     @Transactional
     @Override
     public Result bookListRecommend(Integer id) {
@@ -62,10 +67,13 @@ public class UserServiceImpl implements UserService {
         List<BookGrade> bookGradeList = userMapper.bookGradeList();
         recommendParam.setBookGradeList(bookGradeList);
 
-        List<Integer> bookList = userMapper.bookIdList();
-        recommendParam.setBookIds(bookList);
+        List<Integer> bookIdList = userMapper.bookIdList();
+        recommendParam.setBookIds(bookIdList);
 
-        return pythonService.booksRecommendForUser(recommendParam);
+        List<Integer> recommendIdList = recommendService.userBasedRecommendation(recommendParam, AppConfig.DEFAULT_RECOMMEND_PARAM_K, AppConfig.DEFAULT_RECOMMEND_PARAM_N);
+        List<Book> bookList = userMapper.bookListByIds(recommendIdList);
+
+        return Result.success(bookList);
     }
 
     @Override
@@ -90,6 +98,10 @@ public class UserServiceImpl implements UserService {
         Book book = userMapper.getBookById(id);
         List<Assess> assessList = userMapper.assessList(id);
         book.setAssessList(assessList);
+
+        List<String> tagList = userMapper.getTagList(id);
+        book.setTagList(tagList);
+
         return book;
     }
 
@@ -249,16 +261,24 @@ public class UserServiceImpl implements UserService {
 
             Lend lend = userMapper.getLendById(id);
             Integer bookId = lend.getBookId();
+            String bookName = lend.getBookName();
 
-            Integer avgGrade = userMapper.calculateAverageGrade(bookId);
+            userMapper.ReturnBook(bookId);
 
-            userMapper.updateBookGrade(bookId, avgGrade);
+            BookAssess bookAssess = new BookAssess(bookName, assess);
+
+            List<String> tagList = tagListService.getTagList(bookAssess);
+
+            for (String tag : tagList) {
+                if (tag.length() <= 10)
+                    userMapper.updateTagList(bookId, tag);
+            }
+
 
             return Result.success();
         } catch (Exception e) {
             return Result.error(e.getMessage());
         }
-
     }
 
     @Override
